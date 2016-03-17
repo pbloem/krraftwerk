@@ -1,0 +1,10 @@
+
+MICROSOFT ACADEMIC GRAPH API TERMS OF USE 
+
+
+THIS IS AN AGREEMENT BETWEEN YOU AND MICROSOFT  
+These Terms of Use (“TOU”) are an agreement between you and Microsoft Corporation (“Microsoft” or “we”). This TOU governs your use of the Microsoft Academic Graph API, including data received through the API (“API”) only. The API, which is operated by Microsoft (or its affiliates), enables you to obtain certain data from Microsoft Academic Graph to use in your own application. This TOU does not govern your use of other Microsoft products, services or web sites.  
+ 
+You represent that you are at least 18 years old or you represent a company or other entity and have the authority to enter into this TOU on behalf of the company or entity. Your use of the API constitutes your acceptance of this TOU, the Privacy Statement and registration guidelines, without modification. Microsoft reserves the right to update the TOU at any time in its discretion without notice to you. You are responsible for regularly reviewing this TOU for any changes. Your use of the API after the effective date of such changes shall constitute your continuing acceptance of this TOU, as amended from time to time.  
+ 
+Please note that we do not provide warranties for the API. The TOU also limits our liability. These terms are in the “Disclaimer of Liability and Warranty” section below, and we ask you to read it carefully.  

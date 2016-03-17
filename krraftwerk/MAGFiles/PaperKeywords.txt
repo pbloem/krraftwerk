@@ -1,0 +1,10 @@
+000000BE	vaporization	0BABB10F
+0000024B	population dynamic	0206C527
+00000569	planetary nebula	05AF48EC
+000010BF	boundary layer	06A6EEEF
+00001561	falsification	06ED6B1B
+000017D0	three dimensional	09633D62
+00001B5B	educational technology	00FAE71A
+00001F03	chiral perturbation theory	05E7CF39
+00001FA8	mixtures	006DFE37
+00002AAB	inspection	06A1B9DD

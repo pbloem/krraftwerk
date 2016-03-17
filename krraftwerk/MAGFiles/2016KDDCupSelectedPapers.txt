@@ -1,0 +1,10 @@
+7AB34E32	ADDiff: semantic differencing for activity diagrams	2011	477F6C83	FSE
+7BFD6C72	Boosting the performance of flow-sensitive points-to analysis using value flow	2011	477F6C83	FSE
+7DA0D7B5	BugCache for inspections: hit or miss?	2011	477F6C83	FSE
+784EEC08	CSSL: a logic for specifying conditional scenarios	2011	477F6C83	FSE
+7A050622	Checking conformance of a producer and a consumer	2011	477F6C83	FSE
+7FF2E67F	Does adding manpower also affect quality?: an empirical, longitudinal analysis	2011	477F6C83	FSE
+7FE2DFAE	Don't touch my code!: examining the effects of ownership on software quality	2011	477F6C83	FSE
+813CD17F	Effective communication of software development knowledge through community portals	2011	477F6C83	FSE
+798FC754	Fault localization for data-centric programs	2011	477F6C83	FSE
+80C70DEF	Fuzzy set and cache-based approach for bug triaging	2011	477F6C83	FSE

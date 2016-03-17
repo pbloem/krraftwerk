@@ -1,0 +1,10 @@
+01DF4956	http://dialnet.unirioja.es/servlet/articulo?codigo=3366400
+82EBCED8	http://www.pieronline.jp/content/article/0385-0684/38040/697
+750851DD	http://eric.ed.gov/?id=EJ819454
+750851DD	http://dl.acm.org/citation.cfm?id=1465358
+750851DD	http://dx.doi.org/10.1016/j.compedu.2008.06.003
+750851DD	http://dl.acm.org/citation.cfm?id=1464531.1465358
+750851DD	http://linkinghub.elsevier.com/retrieve/pii/S0360131508000936
+750851DD	http://journals2.scholarsportal.info/details.xqy?uri=/03601315/v52i0001/13_eluoorcotaes.xml
+750851DD	http://www.academia.edu/10758724/EFL_learners_use_of_online_reading_strategies_and_comprehension_of_texts_An_exploratory_study
+750851DD	http://www.sciencedirect.com/science/article/pii/S0360131508000936

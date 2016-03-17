@@ -1,0 +1,10 @@
+76381EFA	75421677	077D5E0F	Effat University	effat university	2
+801D26C9	8084BB24	077D5E0F	Effat University	effat university	3
+716E3093	832818A2	077D5E0F	College of Business, Effat University, Jeddah, Saudi Arabia	effat university	1
+8389DBD7	10C312AC	077D5E0F	College of Business, Effat University	effat university	1
+79FAFDC6	01ECE998	077D5E0F	Computer Science Department Effat University Jeddah, KSA	effat university	1
+7CC65FB3	01ECE998	077D5E0F	Computer Science Department, College of Engineering, Effat University, Jeddah, Saudi Arabia	effat university	1
+7ACA75B3	01ECE998	077D5E0F	Department of Computer Science, Effat University, Jeddah, Saudi Arabia	effat university	2
+7B625006	01ECE998	077D5E0F	Computer Science Department, Effat University, P.O. Box 34689, Jeddah 21478, Saudi Arabia#TAB#	effat university	2
+801D26C9	01ECE998	077D5E0F	Effat University	effat university	1
+5AEDE719	01ECE998	077D5E0F	Effat University	effat university	2
