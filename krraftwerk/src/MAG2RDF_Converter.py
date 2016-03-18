@@ -89,14 +89,37 @@ def translate(ifile, ns):
     nss = dict(nsmgr.namespaces())
 
     with zipfile.ZipFile(ifile, 'r') as zfile:
-        with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:
+        # with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:
+        #    kddAffiliationsHandler(graph, nss, zf)
+        # with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
+        #    kddPapersHandler(graph, nss, zf)
+        with zfile.open('Affiliations.txt') as zf:
             affiliationsHandler(graph, nss, zf)
-        with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
-            papersHandler(graph, nss, zf)
+            
         # TODO Add other handlers
 
     return graph
 
+
+def kddAffiliationsHandler(graph, nss, f):
+    for line in f:
+        terms = line.split()
+
+        ident = rawString(terms[0].decode("utf-8"))
+        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+
+        # affiliation node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
+        label = rdflib.Literal('Affiliation \\"{}\\"'.format(name), lang='en')
+        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+
+        # type
+        tnode = rdflib.URIRef(nss['SWRC'] + 'Organization')
+        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+
+        # id node of affiliation
+        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
 def affiliationsHandler(graph, nss, f):
     for line in f:
@@ -118,7 +141,8 @@ def affiliationsHandler(graph, nss, f):
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
-def papersHandler(graph, nss, f):
+
+def kddPapersHandler(graph, nss, f):
     for line in f:
         terms = line.split()
 
