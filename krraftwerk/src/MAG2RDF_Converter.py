@@ -130,7 +130,7 @@ def affiliationsHandler(graph, nss, f):
 
         # affiliation node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
-        label = rdflib.Literal('Affiliation \\"{}\\"'.format(name.encode()), lang='en')
+        label = rdflib.Literal('Affiliation \\"{}\\"'.format(name.encode('utf-8')), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
