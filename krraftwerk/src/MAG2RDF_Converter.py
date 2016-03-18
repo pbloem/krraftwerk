@@ -129,12 +129,19 @@ def papersHandler(graph, nss, f):
 
         # paper node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + ident)
-        label = rdflib.Literal('Paper with title \\"{}\\"'.format(title), lang='en')
+        label = ''
+        try:
+            label = rdflib.Literal('Paper with title \\"{}\\"'.format(title), lang='en')
+        except:
+            print('Could not parse title: ' + title)     
+            
+            
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
         # title
         graph.add((root, rdflib.URIRef(nss['dcterms'] + 'title'), rdflib.Literal(title, lang='en')))
         # year
-        ynode = rdflib.Literal(year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))
+        ynode = rdflib.Literal(year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))   
+            
         graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), ynode))
         # type
         tnode = rdflib.URIRef(nss['SWRC'] + 'Publication')
