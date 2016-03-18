@@ -9,8 +9,6 @@ from datetime import datetime
 import rdflib
 from writer import writer
 
-
-
 def main(argv):
     ifile = ''
     ofile = ''
@@ -20,13 +18,13 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "d:f:hi:o:", ["if=", "of=", "format=", "default_namespace="])
     except getopt.GetoptError:
-        print('MAG2RDF -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]')
+        print('mag2rdf -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]')
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print(str('A tools to translate the Microsoft Academic Graph, to its Semantic Web equivalent.\nUsage:\n\t' +
-                      'pakbon-ld.py -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]'))
+            print(str('A tool to translate the Microsoft Academic Graph, to its Semantic Web equivalent.\nUsage:\n\t' +
+                      'mag2rdf.py -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]'))
             sys.exit(0)
         elif opt in ("-i", "--ifile"):
             ifile = arg
