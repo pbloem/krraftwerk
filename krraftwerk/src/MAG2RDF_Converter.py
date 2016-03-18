@@ -131,9 +131,9 @@ def papersHandler(graph, nss, f):
         root = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + ident)
         label = ''
         try:
-            label = rdflib.Literal('Paper with title \\"{}\\"'.format(title), lang='en')
+            label = rdflib.Literal('Paper with title \\"{}\\"'.format(title.encode('utf-8')), lang='en')
         except:
-            print('Could not parse title: ' + title)     
+            print('Could not parse title: ' + title.encode('utf-8'))     
             
             
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
