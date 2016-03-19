@@ -212,7 +212,7 @@ def authorsHandler(graph, nss, f):
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
         
         progress = progress + 1
-        if progress % 100 == 0:
+        if progress % 10000 == 0:
             sys.stdout.write('\r ' + str(progress) + ' authors read.')
         
 
