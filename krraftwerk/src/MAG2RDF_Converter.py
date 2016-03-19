@@ -212,7 +212,8 @@ def authorsHandler(graph, nss, f):
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
         
         progress = progress + 1
-        sys.stdout.write('\r ' + str(progress) + ' authors read.')
+        if progress % 10000 == 0:
+            sys.stdout.write('\r ' + str(progress) + ' authors read.')
         
 
 def conferencesHandler(graph, nss, f):
