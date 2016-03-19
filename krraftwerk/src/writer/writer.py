@@ -2,7 +2,6 @@
 
 import os.path
 
-
 def write(graph=None, filename=None, sformat='turtle', overwrite=True):
     if graph is None:
         raise ValueError('Graph missing')

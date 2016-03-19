@@ -97,12 +97,19 @@ def translate(ifile, ns):
         #    kddAffiliationsHandler(graph, nss, zf)
         # with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
         #    kddPapersHandler(graph, nss, zf)
+        print 'importing affiliations'
         with zfile.open('Affiliations.txt') as zf:
             affiliationsHandler(graph, nss, zf)
+        
+        print 'importing authors (this will take a while)'
         with zfile.open('Authors.txt') as zf:
             authorsHandler(graph, nss, zf)
+            
+        print 'importing conferences'            
         with zfile.open('Conferences.txt') as zf:
             conferencesHandler(graph, nss, zf)
+            
+        print 'importing conference instances'
         with zfile.open('ConferencesInstances.txt') as zf:
             conferenceInstancesHandler(graph, nss, zf)
                                                        
@@ -183,6 +190,8 @@ def affiliationsHandler(graph, nss, f):
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
 def authorsHandler(graph, nss, f):
+    
+    progress = 0
     for line in f:
         terms = line.split('\t')
 
@@ -201,6 +210,10 @@ def authorsHandler(graph, nss, f):
         # id node of Author
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+        
+        progress = progress + 1
+        sys.stdout.write('\r ' + str(progress) + ' authors read.')
+        
 
 def conferencesHandler(graph, nss, f):
     for line in f:
