@@ -8,6 +8,8 @@ import zipfile
 from datetime import datetime
 import rdflib
 from writer import writer
+import dateutil 
+from rdflib.namespace import XSD
 
 def main(argv):
     ifile = ''
@@ -86,7 +88,7 @@ def translate(ifile, ns):
     nsmgr.bind('dcterms', rdflib.Namespace('http://purl.org/dc/elements/1.1/'))
     nsmgr.bind('SWRC', rdflib.Namespace('http://swrc.ontoware.org/ontology#'))
     nsmgr.bind('foaf', rdflib.Namespace('http://xmlns.com/foaf/0.1/'))
-
+    nsmgr.bind('xsd', rdflib.Namespace('http://www.w3.org/2001/XMLSchema#'))
 
     nss = dict(nsmgr.namespaces())
 
@@ -97,7 +99,13 @@ def translate(ifile, ns):
         #    kddPapersHandler(graph, nss, zf)
         with zfile.open('Affiliations.txt') as zf:
             affiliationsHandler(graph, nss, zf)
-            
+        with zfile.open('Authors.txt') as zf:
+            authorsHandler(graph, nss, zf)
+        with zfile.open('Conferences.txt') as zf:
+            conferencesHandler(graph, nss, zf)
+        with zfile.open('ConferencesInstances.txt') as zf:
+            conferenceInstancesHandler(graph, nss, zf)
+                                                       
         # TODO Add other handlers
 
     return graph
@@ -105,10 +113,10 @@ def translate(ifile, ns):
 
 def kddAffiliationsHandler(graph, nss, f):
     for line in f:
-        terms = line.split()
+        terms = line.split('\t')
 
-        ident = rawString(terms[0].decode("utf-8"))
-        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+        ident = rawString(terms[0].decode('utf-8'))
+        name = rawString(terms[-1].decode('utf-8'))
 
         # affiliation node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
@@ -123,12 +131,43 @@ def kddAffiliationsHandler(graph, nss, f):
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
+def kddPapersHandler(graph, nss, f):
+    for line in f:
+        terms = line.split('\t')
+
+        ident = rawString(terms[0].decode('utf-8'))
+        title = rawString(terms[1].decode('utf-8'))
+        year = rawString(terms[2].decode("utf-8"))
+        confID = rawString(terms[3].decode("utf-8"))
+        confShortName = rawString(terms[4].decode("utf-8"))
+
+        # paper node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + ident)
+        label = rdflib.Literal('Paper with title \\"{}\\"'.format(title.encode('utf-8')), lang='en')            
+            
+        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+        # title
+        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'title'), rdflib.Literal(title, lang='en')))
+        # year
+        ynode = rdflib.Literal(year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))   
+        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), ynode))
+        # type
+        tnode = rdflib.URIRef(nss['SWRC'] + 'Publication')
+        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+
+        # id node of conference plus link
+        # overwrite if exists
+        croot = rdflib.URIRef(nss['base'] + 'MAG_Conference_' + confID)
+        idNode = rdflib.Literal(confID, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((croot, rdflib.URIRef(nss['SWRC'] +''), idNode))
+        # SWRC links paper to author and author to conference
+
 def affiliationsHandler(graph, nss, f):
     for line in f:
-        terms = line.split()
+        terms = line.split('\t')
 
         ident = rawString(terms[0].decode("utf-8"))
-        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+        name = rawString(terms[1].decode("utf-8"))
 
         # affiliation node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
@@ -145,10 +184,10 @@ def affiliationsHandler(graph, nss, f):
 
 def authorsHandler(graph, nss, f):
     for line in f:
-        terms = line.split()
+        terms = line.split('\t')
 
-        ident = rawString(terms[0].decode("utf-8"))
-        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+        ident = rawString(terms[0].decode('utf-8'))
+        name = rawString(terms[1].decode('utf-8'))
 
         # author node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
@@ -159,19 +198,22 @@ def authorsHandler(graph, nss, f):
         tnode = rdflib.URIRef(nss['foaf'] + 'Person')
         graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
 
-        # id node of affiliation
+        # id node of Author
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
-def conferenceHandler(graph, nss, f):
+def conferencesHandler(graph, nss, f):
     for line in f:
-        terms = line.split()
+        terms = line.split('\t')
 
-        ident = rawString(terms[0].decode("utf-8"))
-        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+        ident = rawString(terms[0].decode('utf-8'))
+        name = rawString(terms[2].decode('utf-8'))
+        
+        shortName = rawString(terms[1].decode('utf-8'))
+        # TODO: add?
 
-        # author node plus label
-        root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
+        # Conference node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Conference_' + ident)
         label = rdflib.Literal('Conference \\"{}\\"'.format(name.encode('utf-8')), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
@@ -183,47 +225,43 @@ def conferenceHandler(graph, nss, f):
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
-
-def kddPapersHandler(graph, nss, f):
+def conferenceInstancesHandler(graph, nss, f):
     for line in f:
-        terms = line.split()
+        terms = line.split('\t')
 
         ident = rawString(terms[0].decode("utf-8"))
-        title = rawString(' '.join([s.decode("utf-8") for s in terms[1:len(terms)-3]]))
-        year = rawString(terms[len(terms)-3].decode("utf-8"))
-        confID = rawString(terms[len(terms)-2].decode("utf-8"))
-
-        # paper node plus label
-        root = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + ident)
-        label = ''
-        try:
-            label = rdflib.Literal('Paper with title \\"{}\\"'.format(title.encode('utf-8')), lang='en')
-        except:
-            print('Could not parse title: ' + title.encode('utf-8'))     
-            
-            
+        confID = rawString(terms[1].decode("utf-8"))
+        instanceID = rawString(terms[2].decode("utf-8"))
+        shortName = rawString(terms[3].decode("utf-8")) # not used
+        name = rawString(terms[4].decode("utf-8"))
+        location = rawString(terms[5].decode("utf-8"))
+        startdate = dateutil.parser.parse(terms[6].decode("utf-8")) if len(terms) >= 7 else None
+        enddate = dateutil.parser.parse(terms[7].decode("utf-8")) if len(terms) >= 8 else None
+        regdate = dateutil.parser.parse(terms[8].decode("utf-8")) if len(terms) >= 9 else None
+        subdate = dateutil.parser.parse(terms[9].decode("utf-8")) if len(terms) >= 10 else None
+        notdate = dateutil.parser.parse(terms[10].decode("utf-8")) if len(terms) >= 11 else None
+        finaldate = dateutil.parser.parse(terms[11].decode("utf-8")) if len(terms) >= 12 else None
+        
+        # instance node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_ConferenceInstance_' + ident)
+        label = rdflib.Literal('Conference instance \\"{}\\"'.format(name.encode('utf-8')), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
-        # title
-        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'title'), rdflib.Literal(title, lang='en')))
-        # year
-        ynode = rdflib.Literal(year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))   
-            
-        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), ynode))
+
         # type
-        tnode = rdflib.URIRef(nss['SWRC'] + 'Publication')
+        tnode = rdflib.URIRef(nss['SWRC'] + 'Proceedings')
         graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+        
+        # location
+        locLiteral = rdflib.Literal(location)
+        graph.add((root, rdflib.URIRef(nss['base'] + 'location'), locLiteral))
 
-        """
-        # id node of conference plus link
-        # overwrite if exists
-        croot = rdflib.URIRef(nss['base'] + 'MAG_Conference_' + confID)
-        idNode = rdflib.Literal(confID, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
-        graph.add((croot, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+        # Start date (TODO: other dates)
+        startdateLiteral = rdflib.Literal(startdate.isoformat(), datatype=XSD.Date)
+        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), startdateLiteral))
 
-        SWRC links paper to author and author to conference
-        """
-
-
+        # id node of affiliation
+        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
 def rawString(string):
     return re.sub('\s+', ' ', re.sub(r'\"', r'\\"', re.sub(r'\\', r'\\\\', string)))
