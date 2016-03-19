@@ -85,6 +85,8 @@ def translate(ifile, ns):
     nsmgr.bind('base', rdflib.Namespace(ns))
     nsmgr.bind('dcterms', rdflib.Namespace('http://purl.org/dc/elements/1.1/'))
     nsmgr.bind('SWRC', rdflib.Namespace('http://swrc.ontoware.org/ontology#'))
+    nsmgr.bind('foaf', rdflib.Namespace('http://xmlns.com/foaf/0.1/'))
+
 
     nss = dict(nsmgr.namespaces())
 
@@ -135,6 +137,46 @@ def affiliationsHandler(graph, nss, f):
 
         # type
         tnode = rdflib.URIRef(nss['SWRC'] + 'Organization')
+        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+
+        # id node of affiliation
+        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+
+def authorsHandler(graph, nss, f):
+    for line in f:
+        terms = line.split()
+
+        ident = rawString(terms[0].decode("utf-8"))
+        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+
+        # author node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
+        label = rdflib.Literal('\\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+
+        # type
+        tnode = rdflib.URIRef(nss['foaf'] + 'Person')
+        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+
+        # id node of affiliation
+        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+
+def conferenceHandler(graph, nss, f):
+    for line in f:
+        terms = line.split()
+
+        ident = rawString(terms[0].decode("utf-8"))
+        name = rawString(' '.join([s.decode("utf-8") for s in terms[1:]]))
+
+        # author node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
+        label = rdflib.Literal('Conference \\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+
+        # type
+        tnode = rdflib.URIRef(nss['SWRC'] + 'Conference')
         graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
 
         # id node of affiliation
