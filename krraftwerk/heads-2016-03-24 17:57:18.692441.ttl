@@ -1,0 +1,651 @@
+@prefix SWRC: <http://swrc.ontoware.org/ontology#> .
+@prefix base: <http://www.example.org/> .
+@prefix bibo: <http://purl.org/ontology/bibo/> .
+@prefix conf: <http://ebiquity.umbc.edu/ontology/conference.owl#> .
+@prefix dcterms: <http://purl.org/dc/elements/1.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prism: <http://prismstandard.org/namespaces/1.2/basic/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix swc: <http://data.semanticweb.org/ns/swc/ontology#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+base:MAG_Affiliation_0010A9BE a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"american association of school administrators\""@en ;
+    dcterms:identifier "0010A9BE"^^xsd:ID .
+
+base:MAG_Affiliation_001E3D1D a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"national trust for scotland\""@en ;
+    dcterms:identifier "001E3D1D"^^xsd:ID .
+
+base:MAG_Affiliation_003EB1CB a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"mathematical institute university of oxford\""@en ;
+    dcterms:identifier "003EB1CB"^^xsd:ID .
+
+base:MAG_Affiliation_0040BAC6 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"de la salle college of saint benilde\""@en ;
+    dcterms:identifier "0040BAC6"^^xsd:ID .
+
+base:MAG_Affiliation_0041F649 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"mahanakorn university of technology\""@en ;
+    dcterms:identifier "0041F649"^^xsd:ID .
+
+base:MAG_Affiliation_004658F4 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"xiangtan university\""@en ;
+    dcterms:identifier "004658F4"^^xsd:ID .
+
+base:MAG_Affiliation_0052BF56 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"shanxi datong university\""@en ;
+    dcterms:identifier "0052BF56"^^xsd:ID .
+
+base:MAG_Affiliation_0052D95A a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"fitchburg state university\""@en ;
+    dcterms:identifier "0052D95A"^^xsd:ID .
+
+base:MAG_Affiliation_0058C126 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"national institute of design\""@en ;
+    dcterms:identifier "0058C126"^^xsd:ID .
+
+base:MAG_Affiliation_005D40FA a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Affiliation \"swiss seismological service\""@en ;
+    dcterms:identifier "005D40FA"^^xsd:ID .
+
+base:MAG_Author_00001F05 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"nancy praill\""@en ;
+    dcterms:identifier "00001F05"^^xsd:ID .
+
+base:MAG_Author_000025C5 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"david banitt\""@en ;
+    dcterms:identifier "000025C5"^^xsd:ID .
+
+base:MAG_Author_00002AD3 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"david s rebergen\""@en ;
+    dcterms:identifier "00002AD3"^^xsd:ID .
+
+base:MAG_Author_000038C0 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"è¥¿å ä¸å¹¸\""@en ;
+    dcterms:identifier "000038C0"^^xsd:ID .
+
+base:MAG_Author_000060E7 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"francesco saverio intorcia\""@en ;
+    dcterms:identifier "000060E7"^^xsd:ID .
+
+base:MAG_Author_00006A31 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"b zelazowska\""@en ;
+    dcterms:identifier "00006A31"^^xsd:ID .
+
+base:MAG_Author_00009F6B a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"bo glimskar\""@en ;
+    dcterms:identifier "00009F6B"^^xsd:ID .
+
+base:MAG_Author_0000B5FA a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"lars goerigk\""@en ;
+    dcterms:identifier "0000B5FA"^^xsd:ID .
+
+base:MAG_Author_0000D3AB a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"default admin user\""@en ;
+    dcterms:identifier "0000D3AB"^^xsd:ID .
+
+base:MAG_Author_0000DF94 a SWRC:Person,
+        foaf:Person ;
+    rdfs:label "\"leila medjkoune\""@en ;
+    dcterms:identifier "0000DF94"^^xsd:ID .
+
+base:MAG_ConferenceInstance_02C389BB a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"GPCE 2008 : Seventh International Conference on Generative Programming and Component Engineering\""@en ;
+    swc:hasLocation "Nashville, TN, USA" ;
+    conf:abstractDueOn "2008-05-12T00:00:00"^^xsd:Date ;
+    conf:endDate "2008-10-23T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2008-05-19T00:00:00"^^xsd:Date ;
+    conf:registrationDueOn "2008-05-12T00:00:00"^^xsd:Date ;
+    conf:startDate "2008-10-19T00:00:00"^^xsd:Date ;
+    dcterms:date "2008"^^xsd:gYear ;
+    dcterms:identifier "02C389BB"^^xsd:ID ;
+    rdfs:seeAlso <http://www.hope.cs.rice.edu/twiki/bin/view/GPCE08/WebHome> .
+
+base:MAG_ConferenceInstance_02E937E1 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"ELPUB 2010 : 14th International Conference on Electronic Publishing\""@en ;
+    swc:hasLocation "Helsinki, Finland" ;
+    conf:endDate "2010-06-18T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2010-01-22T00:00:00"^^xsd:Date,
+        "2010-04-09T00:00:00"^^xsd:Date ;
+    conf:startDate "2010-06-16T00:00:00"^^xsd:Date ;
+    dcterms:date "2010"^^xsd:gYear ;
+    dcterms:identifier "02E937E1"^^xsd:ID ;
+    rdfs:seeAlso <http://conferences.aepic.it/index.php/elpub10/elpub2010> .
+
+base:MAG_ConferenceInstance_0719147B a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"ICASSP 2015 : International Conference on Acoustics, Speech, and Signal Processing\""@en ;
+    swc:hasLocation "Brisbane, Australia" ;
+    conf:endDate "2015-04-24T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2014-10-05T00:00:00"^^xsd:Date,
+        "2015-02-13T00:00:00"^^xsd:Date ;
+    conf:startDate "2015-04-19T00:00:00"^^xsd:Date ;
+    dcterms:date "2015"^^xsd:gYear ;
+    dcterms:identifier "0719147B"^^xsd:ID ;
+    rdfs:seeAlso <http://icassp2015.org/> .
+
+base:MAG_ConferenceInstance_073E7730 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"CIA 2007 : 11th International Workshop on Cooperative Information Agents\""@en ;
+    swc:hasLocation "Delft, Netherlands" ;
+    conf:endDate "2007-09-21T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2008-03-24T00:00:00"^^xsd:Date ;
+    conf:startDate "2007-09-19T00:00:00"^^xsd:Date ;
+    dcterms:date "2007"^^xsd:gYear ;
+    dcterms:identifier "073E7730"^^xsd:ID ;
+    rdfs:seeAlso <http://www.dfki.de/~klusch/cia2007.html> .
+
+base:MAG_ConferenceInstance_08321474 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"ICASSP 2013 : The 38th IEEE International Conference on Acoustics, Speech, and Signal Processing\""@en ;
+    swc:hasLocation "Vancouver, Canada" ;
+    conf:endDate "2013-05-30T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2012-11-30T00:00:00"^^xsd:Date,
+        "2013-03-18T00:00:00"^^xsd:Date ;
+    conf:startDate "2013-05-26T00:00:00"^^xsd:Date ;
+    dcterms:date "2013"^^xsd:gYear ;
+    dcterms:identifier "08321474"^^xsd:ID ;
+    rdfs:seeAlso <http://www.icassp2013.com/> .
+
+base:MAG_ConferenceInstance_08E37AFE a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"AFRIGRAPH 2010 : 7th International Conference on Computer Graphics, Virtual Reality, Visualisation and Interaction in Africa\""@en ;
+    swc:hasLocation "Franschhoek, South Africa" ;
+    conf:endDate "2010-06-23T00:00:00"^^xsd:Date ;
+    conf:startDate "2010-06-21T00:00:00"^^xsd:Date ;
+    dcterms:date "2010"^^xsd:gYear ;
+    dcterms:identifier "08E37AFE"^^xsd:ID ;
+    rdfs:seeAlso <http://www.afrigraph.org/> .
+
+base:MAG_ConferenceInstance_0AC780D0 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"ISLPED 2015 : International Symposium on Low Power Electronics and Design\""@en ;
+    swc:hasLocation "Rome, Italy" ;
+    conf:abstractDueOn "2015-02-22T00:00:00"^^xsd:Date ;
+    conf:endDate "2015-07-24T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2015-03-01T00:00:00"^^xsd:Date,
+        "2015-06-10T00:00:00"^^xsd:Date ;
+    conf:registrationDueOn "2015-02-22T00:00:00"^^xsd:Date ;
+    conf:startDate "2015-07-22T00:00:00"^^xsd:Date ;
+    dcterms:date "2015"^^xsd:gYear ;
+    dcterms:identifier "0AC780D0"^^xsd:ID ;
+    rdfs:seeAlso <http://www.islped.org/2015/index.html> .
+
+base:MAG_ConferenceInstance_230B3CA6 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"ICCTA 2015 - International Conference on Computer Technology Applications\""@en ;
+    swc:hasLocation "Rome, Italy" ;
+    conf:endDate "2015-03-24T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2014-12-19T00:00:00"^^xsd:Date ;
+    conf:startDate "2015-03-23T00:00:00"^^xsd:Date ;
+    dcterms:date "2015"^^xsd:gYear ;
+    dcterms:identifier "230B3CA6"^^xsd:ID ;
+    rdfs:seeAlso <http://www.wscar.net/iccta> .
+
+base:MAG_ConferenceInstance_236BD993 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"WISA 2015 : The 16th International Workshop on Information Security Applications\""@en ;
+    swc:hasLocation "Jeju Island, South Korea" ;
+    conf:endDate "2015-08-22T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2015-06-20T00:00:00"^^xsd:Date,
+        "2015-08-01T00:00:00"^^xsd:Date ;
+    conf:startDate "2015-08-20T00:00:00"^^xsd:Date ;
+    dcterms:date "2015"^^xsd:gYear ;
+    dcterms:identifier "236BD993"^^xsd:ID ;
+    rdfs:seeAlso <http://www.wisa.or.kr> .
+
+base:MAG_ConferenceInstance_23E3BC21 a swc:ConferenceEvent,
+        conf:Conference,
+        SWRC:Conference ;
+    rdfs:label "Conference instance \"SIGCSE 2011 - SIGCSE 2011: The 42nd ACM Technical Symposium on Computer Science Education\""@en ;
+    swc:hasLocation "Texas, USA - United States of America" ;
+    conf:endDate "2011-03-09T00:00:00"^^xsd:Date ;
+    conf:paperDueOn "2010-09-10T00:00:00"^^xsd:Date ;
+    conf:startDate "2011-03-09T00:00:00"^^xsd:Date ;
+    dcterms:date "2011"^^xsd:gYear ;
+    dcterms:identifier "23E3BC21"^^xsd:ID ;
+    rdfs:seeAlso <> .
+
+base:MAG_Conference_42C0AB71 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Practical Aspects of Knowledge Management\""@en ;
+    dcterms:identifier "42C0AB71"^^xsd:ID .
+
+base:MAG_Conference_42DBFEF6 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Secure Web Services\""@en ;
+    dcterms:identifier "42DBFEF6"^^xsd:ID .
+
+base:MAG_Conference_42F4C8D1 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Asian Conference on Intelligent Information and Database Systems\""@en ;
+    dcterms:identifier "42F4C8D1"^^xsd:ID .
+
+base:MAG_Conference_4366C780 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"International Colloquium on Grammatical Inference\""@en ;
+    dcterms:identifier "4366C780"^^xsd:ID .
+
+base:MAG_Conference_43742018 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Computational Topology in Image Context\""@en ;
+    dcterms:identifier "43742018"^^xsd:ID .
+
+base:MAG_Conference_44815780 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Winter Simulation Conference\""@en ;
+    dcterms:identifier "44815780"^^xsd:ID .
+
+base:MAG_Conference_44ADC5A3 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Agents and Data Mining Interaction\""@en ;
+    dcterms:identifier "44ADC5A3"^^xsd:ID .
+
+base:MAG_Conference_44C9D190 a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"International Conference on Electronics, Communications, and Computers\""@en ;
+    dcterms:identifier "44C9D190"^^xsd:ID .
+
+base:MAG_Conference_44F7644F a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"Information Security and Assurance\""@en ;
+    dcterms:identifier "44F7644F"^^xsd:ID .
+
+base:MAG_Conference_4527A09C a SWRC:Organization,
+        foaf:Organization ;
+    rdfs:label "Conference \"International Symposium on Memory Management\""@en ;
+    dcterms:identifier "4527A09C"^^xsd:ID .
+
+base:MAG_FieldOfStudy_00002357 a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Point groups in three dimensions\""@en ;
+    dcterms:identifier "00002357"^^xsd:ID ;
+    skos:prefLabel "Point groups in three dimensions"@en .
+
+base:MAG_FieldOfStudy_0001BE57 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_0001DDB2 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_000226EC skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_0002487D skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_0002C08D a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Partial application\""@en ;
+    dcterms:identifier "0002C08D"^^xsd:ID ;
+    skos:prefLabel "Partial application"@en .
+
+base:MAG_FieldOfStudy_0002E1E1 a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Economic impact analysis\""@en ;
+    dcterms:identifier "0002E1E1"^^xsd:ID ;
+    skos:prefLabel "Economic impact analysis"@en .
+
+base:MAG_FieldOfStudy_00032F94 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_0004676F a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"NyquistâShannon sampling theorem\""@en ;
+    dcterms:identifier "0004676F"^^xsd:ID ;
+    skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:prefLabel "NyquistâShannon sampling theorem"@en .
+
+base:MAG_FieldOfStudy_00046E64 a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Single domain\""@en ;
+    dcterms:identifier "00046E64"^^xsd:ID ;
+    skos:prefLabel "Single domain"@en .
+
+base:MAG_FieldOfStudy_0006849B a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Rasterisation\""@en ;
+    dcterms:identifier "0006849B"^^xsd:ID ;
+    skos:prefLabel "Rasterisation"@en .
+
+base:MAG_FieldOfStudy_00077797 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_0007D0C4 a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Abcg2\""@en ;
+    dcterms:identifier "0007D0C4"^^xsd:ID ;
+    skos:prefLabel "Abcg2"@en .
+
+base:MAG_FieldOfStudy_00080BCB a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Angle of attack\""@en ;
+    dcterms:identifier "00080BCB"^^xsd:ID ;
+    skos:prefLabel "Angle of attack"@en .
+
+base:MAG_FieldOfStudy_000AFDC5 a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"Tree hollow\""@en ;
+    dcterms:identifier "000AFDC5"^^xsd:ID ;
+    skos:prefLabel "Tree hollow"@en .
+
+base:MAG_FieldOfStudy_000D1FC7 a SWRC:Topic,
+        skos:Concept ;
+    rdfs:label "Field of study \"DNA codon table\""@en ;
+    dcterms:identifier "000D1FC7"^^xsd:ID ;
+    skos:prefLabel "DNA codon table"@en .
+
+base:MAG_FieldOfStudy_064E5072 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_092C7EF1 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_09892D7B skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_09DE2FBE skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_Journal_00C5DF18 a SWRC:Journal ;
+    rdfs:label "Journal \"Statistical Science\""@en ;
+    dcterms:identifier "00C5DF18"^^xsd:ID .
+
+base:MAG_Journal_013A68A4 a SWRC:Journal ;
+    rdfs:label "Journal \"AIDS\""@en ;
+    dcterms:identifier "013A68A4"^^xsd:ID .
+
+base:MAG_Journal_03076DAF a SWRC:Journal ;
+    rdfs:label "Journal \"AstÃ©risque\""@en ;
+    dcterms:identifier "03076DAF"^^xsd:ID .
+
+base:MAG_Journal_030F0139 a SWRC:Journal ;
+    rdfs:label "Journal \"Early Music History\""@en ;
+    dcterms:identifier "030F0139"^^xsd:ID .
+
+base:MAG_Journal_0625E290 a SWRC:Journal ;
+    rdfs:label "Journal \"Ethical Theory and Moral Practice\""@en ;
+    dcterms:identifier "0625E290"^^xsd:ID .
+
+base:MAG_Journal_06A8D1A3 a SWRC:Journal ;
+    rdfs:label "Journal \"Neurosurgery\""@en ;
+    dcterms:identifier "06A8D1A3"^^xsd:ID .
+
+base:MAG_Journal_08A20822 a SWRC:Journal ;
+    rdfs:label "Journal \"Memory Studies\""@en ;
+    dcterms:identifier "08A20822"^^xsd:ID .
+
+base:MAG_Journal_0950B41C a SWRC:Journal ;
+    rdfs:label "Journal \"California Agriculture\""@en ;
+    dcterms:identifier "0950B41C"^^xsd:ID .
+
+base:MAG_Journal_393530A2 a SWRC:Journal ;
+    rdfs:label "Journal \"Psychiatry MMC\""@en ;
+    dcterms:identifier "393530A2"^^xsd:ID .
+
+base:MAG_Journal_3A349840 a SWRC:Journal ;
+    rdfs:label "Journal \"The Georgia Review\""@en ;
+    dcterms:identifier "3A349840"^^xsd:ID .
+
+base:MAG_FieldOfStudy_0002C926 skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:narrower base:MAG_FieldOfStudy_065808E3 ;
+    skos:note "Confidence of being narrower than 065808E3 is 0.5" .
+
+base:MAG_FieldOfStudy_0005EC96 skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:narrower base:MAG_FieldOfStudy_007E3B49 ;
+    skos:note "Confidence of being narrower than 007E3B49 is 1" .
+
+base:MAG_FieldOfStudy_00064E1C skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:narrower base:MAG_FieldOfStudy_027301DC ;
+    skos:note "Confidence of being narrower than 027301DC is 1" .
+
+base:MAG_FieldOfStudy_007E3B49 skos:broader base:MAG_FieldOfStudy_0005EC96 ;
+    skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:note "Confidence of being broader than 0005EC96 is 1" .
+
+base:MAG_FieldOfStudy_027301DC skos:broader base:MAG_FieldOfStudy_00064E1C ;
+    skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:note "Confidence of being broader than 00064E1C is 1" .
+
+base:MAG_FieldOfStudy_052C8328 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_065808E3 skos:broader base:MAG_FieldOfStudy_0002C926 ;
+    skos:inScheme base:MAG_FieldOfStudyHierarchy ;
+    skos:note "Confidence of being broader than 0002C926 is 0.5" .
+
+base:MAG_FieldOfStudy_07982D63 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_FieldOfStudy_0B0FEB68 skos:inScheme base:MAG_FieldOfStudyHierarchy .
+
+base:MAG_Paper_5AEDE719 dcterms:creator base:MAG_Author_01ECE998 ;
+    SWRC:creator base:MAG_Author_01ECE998 ;
+    base:MAG_secondAuthor base:MAG_Author_01ECE998 ;
+    foaf:maker base:MAG_Author_01ECE998 .
+
+base:MAG_Paper_716E3093 dcterms:creator base:MAG_Author_832818A2 ;
+    SWRC:creator base:MAG_Author_832818A2 ;
+    base:MAG_firstAuthor base:MAG_Author_832818A2 ;
+    foaf:maker base:MAG_Author_832818A2 .
+
+base:MAG_Paper_76381EFA dcterms:creator base:MAG_Author_75421677 ;
+    SWRC:creator base:MAG_Author_75421677 ;
+    base:MAG_secondAuthor base:MAG_Author_75421677 ;
+    foaf:maker base:MAG_Author_75421677 .
+
+base:MAG_Paper_79FAFDC6 dcterms:creator base:MAG_Author_01ECE998 ;
+    SWRC:creator base:MAG_Author_01ECE998 ;
+    base:MAG_firstAuthor base:MAG_Author_01ECE998 ;
+    foaf:maker base:MAG_Author_01ECE998 .
+
+base:MAG_Paper_7ACA75B3 dcterms:creator base:MAG_Author_01ECE998 ;
+    SWRC:creator base:MAG_Author_01ECE998 ;
+    base:MAG_secondAuthor base:MAG_Author_01ECE998 ;
+    foaf:maker base:MAG_Author_01ECE998 .
+
+base:MAG_Paper_7B625006 dcterms:creator base:MAG_Author_01ECE998 ;
+    SWRC:creator base:MAG_Author_01ECE998 ;
+    base:MAG_secondAuthor base:MAG_Author_01ECE998 ;
+    foaf:maker base:MAG_Author_01ECE998 .
+
+base:MAG_Paper_7CC65FB3 dcterms:creator base:MAG_Author_01ECE998 ;
+    SWRC:creator base:MAG_Author_01ECE998 ;
+    base:MAG_firstAuthor base:MAG_Author_01ECE998 ;
+    foaf:maker base:MAG_Author_01ECE998 .
+
+base:MAG_Paper_8389DBD7 dcterms:creator base:MAG_Author_10C312AC ;
+    SWRC:creator base:MAG_Author_10C312AC ;
+    base:MAG_firstAuthor base:MAG_Author_10C312AC ;
+    foaf:maker base:MAG_Author_10C312AC .
+
+base:MAG_Paper_01B27BE8 a SWRC:Publication ;
+    rdfs:label "Paper titled \"Evaluating Polarity for Verbal Phraseological Units\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/978-3-319-13647-9_19"^^xsd:ID ;
+    dcterms:date "2014"^^xsd:gYear ;
+    dcterms:identifier "01B27BE8"^^xsd:ID ;
+    dcterms:issued "2014-11-16T00:00:00"^^xsd:Date ;
+    dcterms:title "Evaluating Polarity for Verbal Phraseological Units"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19517"^^xsd:positiveInteger .
+
+base:MAG_Paper_027D0030 a SWRC:Publication ;
+    rdfs:label "Paper titled \"Automatic Monitoring the Content of Audio Broadcasted by Internet Radio Stations\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/978-3-642-37807-2_11"^^xsd:ID ;
+    dcterms:date "2012"^^xsd:gYear ;
+    dcterms:identifier "027D0030"^^xsd:ID ;
+    dcterms:issued "2012-10-27T00:00:00"^^xsd:Date ;
+    dcterms:title "Automatic Monitoring the Content of Audio Broadcasted by Internet Radio Stations"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19444"^^xsd:positiveInteger .
+
+base:MAG_Paper_040121AE a SWRC:Publication ;
+    rdfs:label "Paper titled \"Multiple Kernel Support Vector Machine Problem Is NP-Complete\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/978-3-319-13650-9_14"^^xsd:ID ;
+    dcterms:date "2014"^^xsd:gYear ;
+    dcterms:identifier "040121AE"^^xsd:ID ;
+    dcterms:issued "2014-11-16T00:00:00"^^xsd:Date ;
+    dcterms:title "Multiple Kernel Support Vector Machine Problem Is NP-Complete"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19468"^^xsd:positiveInteger .
+
+base:MAG_Paper_0B00AFD8 a SWRC:Publication ;
+    rdfs:label "Paper titled \"Towards the creation of semantic models based on computer-aided designs\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/978-3-642-37807-2_26"^^xsd:ID ;
+    dcterms:date "2012"^^xsd:gYear ;
+    dcterms:identifier "0B00AFD8"^^xsd:ID ;
+    dcterms:issued "2012-10-27T00:00:00"^^xsd:Date ;
+    dcterms:title "Towards the creation of semantic models based on computer-aided designs"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19476"^^xsd:positiveInteger .
+
+base:MAG_Paper_5873C011 a SWRC:Publication ;
+    rdfs:label "Paper titled \"Towards a Model for an Immune System\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/3-540-46016-0_42"^^xsd:ID ;
+    dcterms:date "2002"^^xsd:gYear ;
+    dcterms:identifier "5873C011"^^xsd:ID ;
+    dcterms:issued "2002-04-22T00:00:00"^^xsd:Date ;
+    dcterms:title "Towards a Model for an Immune System"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19177"^^xsd:positiveInteger .
+
+base:MAG_Paper_59BEBE1C a SWRC:Publication ;
+    rdfs:label "Paper titled \"Learning Probability Densities of Optimization Problems with Constraints and Uncertainty\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/978-3-540-88636-5_25"^^xsd:ID ;
+    dcterms:date "2008"^^xsd:gYear ;
+    dcterms:identifier "59BEBE1C"^^xsd:ID ;
+    dcterms:issued "2008-10-27T00:00:00"^^xsd:Date ;
+    dcterms:title "Learning Probability Densities of Optimization Problems with Constraints and Uncertainty"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19444"^^xsd:positiveInteger .
+
+base:MAG_Paper_5C66D743 a SWRC:Publication ;
+    rdfs:label "Paper titled \"Comparison of Neural Networks and Support Vector Machine Dynamic Models for State Estimation in Semiautogenous Mills\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1007/978-3-642-05258-3_42"^^xsd:ID ;
+    dcterms:date "2009"^^xsd:gYear ;
+    dcterms:identifier "5C66D743"^^xsd:ID ;
+    dcterms:issued "2009-11-01T00:00:00"^^xsd:Date ;
+    dcterms:title "Comparison of Neural Networks and Support Vector Machine Dynamic Models for State Estimation in Semiautogenous Mills"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19428"^^xsd:positiveInteger .
+
+base:MAG_Paper_7A1109E4 a SWRC:Publication ;
+    rdfs:label "Paper titled \"Approach Towards a Natural Language Analysis for Diagnosing Mood Disorders and Comorbid Conditions\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    dcterms:date "2013"^^xsd:gYear ;
+    dcterms:identifier "7A1109E4"^^xsd:ID ;
+    dcterms:issued "2013-11-24T00:00:00"^^xsd:Date ;
+    dcterms:title "Approach Towards a Natural Language Analysis for Diagnosing Mood Disorders and Comorbid Conditions"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19555"^^xsd:positiveInteger .
+
+base:MAG_Paper_7CFE299E a SWRC:Publication ;
+    rdfs:label "Paper titled \"Towards a set of Measures for Evaluating Software Agent Autonomy\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    prism:doi "10.1109/MICAI.2009.15"^^xsd:ID ;
+    dcterms:date "2009"^^xsd:gYear ;
+    dcterms:identifier "7CFE299E"^^xsd:ID ;
+    dcterms:issued "2009-11-24T00:00:00"^^xsd:Date ;
+    dcterms:title "Towards a set of Measures for Evaluating Software Agent Autonomy"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "18870"^^xsd:positiveInteger .
+
+base:MAG_Paper_7DEADC9A a SWRC:Publication ;
+    rdfs:label "Paper titled \"A Set of Test Cases for Performance Measures in Multiobjective Optimization\""@en ;
+    swc:relatedToEvent base:MAG_ConferenceInstance_42D7146F ;
+    dcterms:date "2008"^^xsd:gYear ;
+    dcterms:identifier "7DEADC9A"^^xsd:ID ;
+    dcterms:title "A Set of Test Cases for Performance Measures in Multiobjective Optimization"@en ;
+    bibo:presentedAt base:MAG_ConferenceInstance_42D7146F ;
+    base:MAG_hasRank "19394"^^xsd:positiveInteger .
+
+base:MAG_Paper_801D26C9 dcterms:creator base:MAG_Author_01ECE998,
+        base:MAG_Author_8084BB24 ;
+    SWRC:creator base:MAG_Author_01ECE998,
+        base:MAG_Author_8084BB24 ;
+    base:MAG_firstAuthor base:MAG_Author_01ECE998 ;
+    base:MAG_thirdAuthor base:MAG_Author_8084BB24 ;
+    foaf:maker base:MAG_Author_01ECE998,
+        base:MAG_Author_8084BB24 .
+
+base:MAG_Affiliation_077D5E0F foaf:member base:MAG_Author_01ECE998,
+        base:MAG_Author_10C312AC,
+        base:MAG_Author_75421677,
+        base:MAG_Author_8084BB24,
+        base:MAG_Author_832818A2 .
+
+base:MAG_Author_10C312AC SWRC:affiliation base:MAG_Affiliation_077D5E0F ;
+    foaf:made base:MAG_Paper_8389DBD7 .
+
+base:MAG_Author_75421677 SWRC:affiliation base:MAG_Affiliation_077D5E0F ;
+    foaf:made base:MAG_Paper_76381EFA .
+
+base:MAG_Author_8084BB24 SWRC:affiliation base:MAG_Affiliation_077D5E0F ;
+    foaf:made base:MAG_Paper_801D26C9 .
+
+base:MAG_Author_832818A2 SWRC:affiliation base:MAG_Affiliation_077D5E0F ;
+    foaf:made base:MAG_Paper_716E3093 .
+
+base:MAG_ConferenceInstance_42D7146F swc:hasRelatedDocument base:MAG_Paper_01B27BE8,
+        base:MAG_Paper_027D0030,
+        base:MAG_Paper_040121AE,
+        base:MAG_Paper_0B00AFD8,
+        base:MAG_Paper_5873C011,
+        base:MAG_Paper_59BEBE1C,
+        base:MAG_Paper_5C66D743,
+        base:MAG_Paper_7A1109E4,
+        base:MAG_Paper_7CFE299E,
+        base:MAG_Paper_7DEADC9A ;
+    bibo:presents base:MAG_Paper_01B27BE8,
+        base:MAG_Paper_027D0030,
+        base:MAG_Paper_040121AE,
+        base:MAG_Paper_0B00AFD8,
+        base:MAG_Paper_5873C011,
+        base:MAG_Paper_59BEBE1C,
+        base:MAG_Paper_5C66D743,
+        base:MAG_Paper_7A1109E4,
+        base:MAG_Paper_7CFE299E,
+        base:MAG_Paper_7DEADC9A .
+
+base:MAG_FieldOfStudyHierarchy a skos:ConceptScheme ;
+    skos:hasTopConcept base:MAG_FieldOfStudy_052C8328,
+        base:MAG_FieldOfStudy_07982D63,
+        base:MAG_FieldOfStudy_0B0FEB68 .
+
+base:MAG_Author_01ECE998 SWRC:affiliation base:MAG_Affiliation_077D5E0F ;
+    foaf:made base:MAG_Paper_5AEDE719,
+        base:MAG_Paper_79FAFDC6,
+        base:MAG_Paper_7ACA75B3,
+        base:MAG_Paper_7B625006,
+        base:MAG_Paper_7CC65FB3,
+        base:MAG_Paper_801D26C9 .
+
