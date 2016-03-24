@@ -8,7 +8,7 @@ import zipfile
 from datetime import datetime
 import rdflib
 from writer import writer
-import dateutil 
+from dateutil import parser
 from geoSolv import GeoIndex
 
 def main(argv):
@@ -91,6 +91,9 @@ def translate(ifile, ns):
     nsmgr.bind('conf', rdflib.Namespace('http://ebiquity.umbc.edu/ontology/conference.owl#'))
     nsmgr.bind('foaf', rdflib.Namespace('http://xmlns.com/foaf/0.1/'))
     nsmgr.bind('xsd', rdflib.Namespace('http://www.w3.org/2001/XMLSchema#'))
+    nsmgr.bind('skos', rdflib.Namespace('http://www.w3.org/2004/02/skos/core#'))
+    nsmgr.bind('prism', rdflib.Namespace('http://prismstandard.org/namespaces/1.2/basic/'))
+    nsmgr.bind('bibo', rdflib.Namespace('http://purl.org/ontology/bibo/'))
 
     nss = dict(nsmgr.namespaces())
 
@@ -112,9 +115,29 @@ def translate(ifile, ns):
             conferencesHandler(graph, nss, zf)
             
         print('importing conference instances')
-        with zfile.open('ConferencesInstances.txt') as zf:
+        with zfile.open('ConferenceInstances.txt') as zf:
             conferenceInstancesHandler(graph, nss, zf)
                                                        
+        print('importing fields of study')
+        with zfile.open('FieldsOfStudy.txt') as zf:
+            fieldsOfStudyHandler(graph, nss, zf)
+        
+        print('importing fields of study hierarchy')
+        with zfile.open('FieldOfStudyHierarchy.txt') as zf:
+            fieldOfStudyHierarchyHandler(graph, nss, zf)
+        
+        print('importing journals')
+        with zfile.open('Journals.txt') as zf:
+            journalHandler(graph, nss, zf)
+        
+        print('importing papers')
+        with zfile.open('Papers.txt') as zf:
+            paperHandler(graph, nss, zf)
+        
+        print('importing papers-authors-affiliations')
+        with zfile.open('PaperAuthorAffiliations.txt') as zf:
+            paperAuthorAffiliationsHandler(graph, nss, zf)
+        
         # TODO Add other handlers
 
     return graph
@@ -122,10 +145,10 @@ def translate(ifile, ns):
 
 def kddAffiliationsHandler(graph, nss, f):
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        ident = rawString(terms[0].decode('utf-8'))
-        name = rawString(terms[-1].decode('utf-8'))
+        ident = rawString(terms[0])
+        name = rawString(terms[-1])
 
         # affiliation node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
@@ -142,17 +165,17 @@ def kddAffiliationsHandler(graph, nss, f):
 
 def kddPapersHandler(graph, nss, f):
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        ident = rawString(terms[0].decode('utf-8'))
-        title = rawString(terms[1].decode('utf-8'))
-        year = rawString(terms[2].decode("utf-8"))
-        confID = rawString(terms[3].decode("utf-8"))
-        #confShortName = rawString(terms[4].decode("utf-8"))
+        ident = rawString(terms[0])
+        title = rawString(terms[1])
+        year = rawString(terms[2])
+        confID = rawString(terms[3])
+        #confShortName = rawString(terms[4])
 
         # paper node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + ident)
-        label = rdflib.Literal('Paper with title \\"{}\\"'.format(title.encode('utf-8')), lang='en')            
+        label = rdflib.Literal('Paper with title \\"{}\\"'.format(title), lang='en')            
             
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
         # title
@@ -173,14 +196,14 @@ def kddPapersHandler(graph, nss, f):
 
 def affiliationsHandler(graph, nss, f):
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        ident = rawString(terms[0].decode("utf-8"))
-        name = rawString(terms[1].decode("utf-8"))
+        ident = rawString(terms[0])
+        name = rawString(terms[1])
 
         # affiliation node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
-        label = rdflib.Literal('Affiliation \\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        label = rdflib.Literal('Affiliation \\"{}\\"'.format(name), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
@@ -196,14 +219,14 @@ def affiliationsHandler(graph, nss, f):
 def authorsHandler(graph, nss, f):
     progress = 0
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        ident = rawString(terms[0].decode('utf-8'))
-        name = rawString(terms[1].decode('utf-8'))
+        ident = rawString(terms[0])
+        name = rawString(terms[1])
 
         # author node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
-        label = rdflib.Literal('\\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        label = rdflib.Literal('\\"{}\\"'.format(name), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
@@ -223,17 +246,17 @@ def authorsHandler(graph, nss, f):
 
 def conferencesHandler(graph, nss, f):
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        ident = rawString(terms[0].decode('utf-8'))
-        name = rawString(terms[2].decode('utf-8'))
+        ident = rawString(terms[0])
+        name = rawString(terms[2])
         
-        # shortName = rawString(terms[1].decode('utf-8'))
+        # shortName = rawString(terms[1])
         # TODO: add?
 
         # Conference node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Conference_' + ident)
-        label = rdflib.Literal('Conference \\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        label = rdflib.Literal('Conference \\"{}\\"'.format(name), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
@@ -255,24 +278,24 @@ def conferenceInstancesHandler(graph, nss, f):
     geoIndex = GeoIndex()
 
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        organizationId = rawString(terms[0].decode("utf-8"))
-        ident = rawString(terms[1].decode("utf-8"))
-        #shortName = rawString(terms[2].decode("utf-8")) # not used
-        name = rawString(terms[3].decode("utf-8"))
-        location = rawString(terms[4].decode("utf-8"))
-        url = rawString(terms[5].decode("utf-8"))
-        startdate = dateutil.parser.parse(terms[6].decode("utf-8")) if len(terms) >= 7 else None
-        enddate = dateutil.parser.parse(terms[7].decode("utf-8")) if len(terms) >= 8 else None
-        abstractdate = dateutil.parser.parse(terms[8].decode("utf-8")) if len(terms) >= 9 else None
-        subdate = dateutil.parser.parse(terms[9].decode("utf-8")) if len(terms) >= 10 else None
-        notdate = dateutil.parser.parse(terms[10].decode("utf-8")) if len(terms) >= 11 else None
-        finaldate = dateutil.parser.parse(terms[11].decode("utf-8")) if len(terms) >= 12 else None
+        organizationId = rawString(terms[0])
+        ident = rawString(terms[1])
+        #shortName = rawString(terms[2]) # not used
+        name = rawString(terms[3])
+        location = rawString(terms[4])
+        url = rawString(terms[5])
+        startdate = parser.parse(terms[6]) if len(terms) > 6 and terms[6] != '' else None
+        enddate = parser.parse(terms[7]) if len(terms) > 7 and terms[7] != '' else None
+        abstractdate = parser.parse(terms[8]) if len(terms) > 8 and terms[8] != '' else None
+        subdate = parser.parse(terms[9]) if len(terms) > 9 and terms[9] != '' else None
+        notdate = parser.parse(terms[10]) if len(terms) > 10 and terms[10] != '' else None
+        finaldate = parser.parse(terms[11]) if len(terms) > 11 and terms[11] != '' else None
         
         # instance node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_ConferenceInstance_' + ident)
-        label = rdflib.Literal('Conference instance \\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        label = rdflib.Literal('Conference instance \\"{}\\"'.format(name), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
@@ -296,53 +319,60 @@ def conferenceInstancesHandler(graph, nss, f):
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'seeAlso'), node)) # not the best predicate
         
         # location
-        geoURI =geoIndex.resolve(location)
-        if geoURI is None:
-            loc = rdflib.Literal(location)
-        else:
-            loc = rdflib.URIRef(geoURI) # range should actually be geoThing (coordinates)
+        #geoURI =geoIndex.resolve(location)
+        #if geoURI is None:
+        #    loc = rdflib.Literal(location)
+        #else:
+        #    loc = rdflib.URIRef(geoURI) # range should actually be geoThing (coordinates)
+        loc = rdflib.Literal(location) # turned off for now
 
         graph.add((root, rdflib.URIRef(nss['swc'] + 'hasLocation'), loc))
 
 
         # to facilitate easy queries
-        year = rdflib.Literal(startdate.year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))
-        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), year))
+        if startdate is not None:
+            year = rdflib.Literal(startdate.year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))
+            graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), year))
 
         # Start date 
-        startdateLiteral = rdflib.Literal(startdate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
-        graph.add((root, rdflib.URIRef(nss['conf'] + 'startDate'), startdateLiteral))
+        if startdate is not None:
+            startdateLiteral = rdflib.Literal(startdate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
+            graph.add((root, rdflib.URIRef(nss['conf'] + 'startDate'), startdateLiteral))
         
         # end date 
-        enddateLiteral = rdflib.Literal(enddate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
-        graph.add((root, rdflib.URIRef(nss['conf'] + 'endDate'), enddateLiteral))
+        if enddate is not None:
+            enddateLiteral = rdflib.Literal(enddate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
+            graph.add((root, rdflib.URIRef(nss['conf'] + 'endDate'), enddateLiteral))
 
         # abstract date 
-        abstractdateLiteral = rdflib.Literal(abstractdate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
-        graph.add((root, rdflib.URIRef(nss['conf'] + 'abstractDueOn'), abstractdateLiteral))
-        graph.add((root, rdflib.URIRef(nss['conf'] + 'registrationDueOn'), abstractdateLiteral))
+        if abstractdate is not None:
+            abstractdateLiteral = rdflib.Literal(abstractdate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
+            graph.add((root, rdflib.URIRef(nss['conf'] + 'abstractDueOn'), abstractdateLiteral))
+            graph.add((root, rdflib.URIRef(nss['conf'] + 'registrationDueOn'), abstractdateLiteral))
         
         
         ### A better solution is needed here ###
         
         # submission date 
-        subLiteral = rdflib.Literal(subdate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
-        graph.add((root, rdflib.URIRef(nss['conf'] + 'paperDueOn'), subLiteral))
+        if subdate is not None:
+            subLiteral = rdflib.Literal(subdate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
+            graph.add((root, rdflib.URIRef(nss['conf'] + 'paperDueOn'), subLiteral))
  
         # final date 
-        finalLiteral = rdflib.Literal(finaldate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
-        graph.add((root, rdflib.URIRef(nss['conf'] + 'paperDueOn'), finalLiteral))
+        if finaldate is not None:
+            finalLiteral = rdflib.Literal(finaldate.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))
+            graph.add((root, rdflib.URIRef(nss['conf'] + 'paperDueOn'), finalLiteral))
 
 def fieldsOfStudyHandler(graph, nss, f):
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        ident = rawString(terms[0].decode("utf-8"))
-        name = rawString(terms[1].decode("utf-8"))
+        ident = rawString(terms[0])
+        name = rawString(terms[1])
 
         # add node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + ident)
-        label = rdflib.Literal('Field of study \\"{}\\"'.format(name.encode('utf-8')), lang='en')
+        label = rdflib.Literal('Field of study \\"{}\\"'.format(name), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
         graph.add((root, rdflib.URIRef(nss['skos'] + 'prefLabel'), rdflib.Literal(name, lang='en')))
 
@@ -363,13 +393,13 @@ def fieldOfStudyHierarchyHandler(graph, nss, f):
     graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
   
     for line in f:
-        terms = line.split('\t')
+        terms = line.decode('utf-8').strip().split('\t')
 
-        childId = rawString(terms[0].decode("utf-8"))
-        childLvl = rawString(terms[1].decode("utf-8"))[1:]
-        parentId = rawString(terms[2].decode("utf-8"))
-        parentLvl = rawString(terms[3].decode("utf-8"))[1:]
-        confidence = rawString(terms[4].decode("utf-8"))
+        childId = rawString(terms[0])
+        childLvl = rawString(terms[1])[1:]
+        parentId = rawString(terms[2])
+        parentLvl = rawString(terms[3])[1:]
+        confidence = rawString(terms[4])
 
         graph.add((rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + childId), \
                    rdflib.URIRef(nss['skos'] + 'inScheme'), \
@@ -388,7 +418,7 @@ def fieldOfStudyHierarchyHandler(graph, nss, f):
                        rdflib.URIRef(nss['skos'] + 'hasTopConcept'), \
                        rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + parentId)))
 
-        if int(parentLvl) - int(childLvl) == 1:
+        if int(childLvl) - int(parentLvl) == 1:
             graph.add((rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + childId), \
                        rdflib.URIRef(nss['skos'] + 'narrower'), \
                        rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + parentId)))
@@ -416,6 +446,133 @@ def fieldOfStudyHierarchyHandler(graph, nss, f):
             graph.add((rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + childId), \
                        rdflib.URIRef(nss['skos'] + 'note'), \
                        rdflib.Literal('Confidence of being broader than {} is {}'.format(parentId, confidence))))
+
+def journalHandler(graph, nss, f):
+    for line in f:
+        terms = line.decode('utf-8').strip().split('\t')
+
+        ident = rawString(terms[0])
+        name = rawString(terms[1])
+
+        # add node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Journal_' + ident)
+        label = rdflib.Literal('Journal \\"{}\\"'.format(name), lang='en')
+        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+
+        # type
+        tnode = rdflib.URIRef(nss['SWRC'] + 'Journal')
+        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+
+        # id node
+        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+
+def paperHandler(graph, nss, f):
+    for line in f:
+        terms = line.decode('utf-8').strip().split('\t')
+
+        ident = rawString(terms[0])
+        title = rawString(terms[1]) 
+        # title_alt = rawString(terms[2]) if terms[2] != '' else None
+        year = rawString(terms[3]) if terms[3] != '' else None
+        date = parser.parse(rawString(terms[4])) if terms[4] != '' else None
+        doi = rawString(terms[5]) if terms[5] != '' else None
+        # venue = rawString(terms[6]) if terms[6] != '' else None   # superseded by conference ID
+        # venue_alt = rawString(terms[7]) if terms[7] != '' else None
+        journalId = rawString(terms[8]) if terms[8] != '' else None
+        conferenceId = rawString(terms[9]) if terms[9] != '' else None
+        rank = rawString(terms[10]) if terms[10] != '' else None
+
+        # add node plus label
+        root = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + ident)
+        label = rdflib.Literal('Paper titled \\"{}\\"'.format(title), lang='en')
+        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+
+        # title
+        graph.add((root, rdflib.URIRef(nss['dcterms'] + 'title'), rdflib.Literal(title, lang='en')))
+
+        # year
+        if year is not None:
+            ynode = rdflib.Literal(year, datatype=rdflib.URIRef(nss['xsd'] + 'gYear'))   
+            graph.add((root, rdflib.URIRef(nss['dcterms'] + 'date'), ynode))
+
+        # date
+        if date is not None:
+            dnode = rdflib.Literal(date.isoformat(), datatype=rdflib.URIRef(nss['xsd'] + 'Date'))   
+            graph.add((root, rdflib.URIRef(nss['dcterms'] + 'issued'), dnode))
+
+        # doi
+        if doi is not None:
+            doinode = rdflib.Literal(doi, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))   
+            graph.add((root, rdflib.URIRef(nss['prism'] + 'doi'), doinode))
+
+        # rank
+        if rank is not None:
+            ranknode = rdflib.Literal(rank, datatype=rdflib.URIRef(nss['xsd'] + 'positiveInteger'))
+            graph.add((root, rdflib.URIRef(nss['base'] + 'MAG_hasRank'), ranknode))
+
+        # journal
+        if journalId is not None:
+            jnode = rdflib.URIRef(nss['base'] + 'MAG_Journal_' + journalId)
+            graph.add((root, rdflib.URIRef(nss['dcterms'] + 'hasPart'), jnode))
+            graph.add((jnode, rdflib.URIRef(nss['dcterms'] + 'partOf'), root))
+
+        # conference
+        if conferenceId is not None:
+            cnode = rdflib.URIRef(nss['base'] + 'MAG_ConferenceInstance_' + conferenceId)
+            graph.add((root, rdflib.URIRef(nss['bibo'] + 'presentedAt'), cnode))
+            graph.add((root, rdflib.URIRef(nss['swc'] + 'relatedToEvent'), cnode))
+            graph.add((cnode, rdflib.URIRef(nss['bibo'] + 'presents'), root))
+            graph.add((cnode, rdflib.URIRef(nss['swc'] + 'hasRelatedDocument'), root))
+
+        # type
+        tnode = rdflib.URIRef(nss['SWRC'] + 'Publication')
+        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+
+        # id node
+        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+
+def paperAuthorAffiliationsHandler(graph, nss, f):
+    for line in f:
+        terms = line.decode('utf-8').strip().split('\t')
+
+        paperId = rawString(terms[0])
+        authorId = rawString(terms[1])
+        affiliationId = rawString(terms[2])
+        #affiliationName = rawString(terms[3])
+        #affiliationName_alt = rawString(terms[4])
+        seqnum = rawString(terms[5])
+
+        paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
+        author = rdflib.URIRef(nss['base'] + 'MAG_Author_' + authorId)
+        affiliation = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + affiliationId)
+        
+        # paper - author
+        graph.add((paper, rdflib.URIRef(nss['dcterms'] + 'creator'), author))
+        graph.add((paper, rdflib.URIRef(nss['SWRC'] + 'creator'), author))
+        graph.add((paper, rdflib.URIRef(nss['foaf'] + 'maker'), author))
+        graph.add((author, rdflib.URIRef(nss['foaf'] + 'made'), paper))
+        
+        # affiliation - author
+        graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'member'), author))
+        graph.add((author, rdflib.URIRef(nss['SWRC'] + 'affiliation'), affiliation))
+
+        # author sequence (not sure if this works out)
+        if int(seqnum) == 1: # first author
+            graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_firstAuthor'), author))
+        elif int(seqnum) == 2: 
+            graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_secondAuthor'), author))
+        elif int(seqnum) == 3: 
+            graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_thirdAuthor'), author))
+        # rest doesnt matter much (assumption)
+
+        
+        # paper - affiliation (of author)
+        #graph.add((paper, rdflib.URIRef(nss['dcterms'] + 'creator'), affiliation))
+        #graph.add((paper, rdflib.URIRef(nss['SWRC'] + 'creator'), affiliation))
+        #graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'maker'), paper))
+        #graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'made'), paper))
 
 
 def rawString(string):
