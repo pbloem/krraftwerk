@@ -81,7 +81,8 @@ def translate(ifile, ns):
         raise OSError('File not found: ' + ifile)
 
     # create graph instance
-    graph = rdflib.Graph(identifier='MAG-LD')
+    graph = rdflib.Graph('Sleepycat', identifier='MAG-LD')
+    graph.open('./store', create = True)
 
     # set namespaces
     nsmgr = rdflib.namespace.NamespaceManager(graph)
