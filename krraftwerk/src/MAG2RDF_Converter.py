@@ -238,7 +238,7 @@ def authorsHandler(graph, nss, f):
 
         # author node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
-        label = rdflib.Literal('\\"{}\\"'.format(name), lang='en')
+        label = rdflib.Literal('\\"{}\\"'.format(name.encode('utf-8')), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
@@ -268,7 +268,7 @@ def conferencesHandler(graph, nss, f):
 
         # Conference node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_Conference_' + ident)
-        label = rdflib.Literal('Conference \\"{}\\"'.format(name), lang='en')
+        label = rdflib.Literal('Conference \\"{}\\"'.format(name.encode('utf-8')), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
@@ -307,7 +307,7 @@ def conferenceInstancesHandler(graph, nss, f):
         
         # instance node plus label
         root = rdflib.URIRef(nss['base'] + 'MAG_ConferenceInstance_' + ident)
-        label = rdflib.Literal('Conference instance \\"{}\\"'.format(name), lang='en')
+        label = rdflib.Literal('Conference instance \\"{}\\"'.format(name.encode('utf-8')), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
         # type
