@@ -546,7 +546,13 @@ def paperAuthorAffiliationsHandler(graph, nss, f, affiliations):
     authors = set()
     papers = set()
     
+    
+    progress = 0
     for line in f:
+        if progress % 10000 == 0:
+            sys.stdout.write('\r ' + str(progress) + ' paper/author affiliations read.')
+        
+        progress = progress + 1
         terms = line.decode('utf-8').strip().split('\t')
 
         paperId = rawString(terms[0])
