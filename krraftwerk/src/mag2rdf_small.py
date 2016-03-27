@@ -11,6 +11,10 @@ from writer import writer
 from dateutil import parser
 from geoSolv import GeoIndex
 
+# This is a reduced version of the MAG2RDF import script, importing
+# only information crucial to the KDD cup, so that hopefully the size of the 
+# data becomes manageable.
+
 def main(argv):
     ifile = ''
     ofile = ''
@@ -81,7 +85,6 @@ def translate(ifile, ns):
 
     # create graph instance
     graph = rdflib.Graph(identifier='MAG-LD')
-    graph.open('./store', create = True)
 
     # set namespaces
     nsmgr = rdflib.namespace.NamespaceManager(graph)
@@ -99,17 +102,27 @@ def translate(ifile, ns):
     nss = dict(nsmgr.namespaces())
 
     with zipfile.ZipFile(ifile, 'r') as zfile:
-        # with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:
-        #    kddAffiliationsHandler(graph, nss, zf)
-        # with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
+        
+        affiliations = None
+        print('importing KDD affiliations')
+        with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:
+           affiliations = kddAffiliationsHandler(zf)
+           
+        authors = None;
+        papers = None;
+        print('importing papers-authors-affiliations')
+        with zfile.open('PaperAuthorAffiliations.txt') as zf:
+            (papers, authors) = paperAuthorAffiliationsHandler(graph, nss, zf, affiliations)
+        
+        #with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
         #    kddPapersHandler(graph, nss, zf)
+        
         print('importing affiliations')
         with zfile.open('Affiliations.txt') as zf:
             affiliationsHandler(graph, nss, zf)
         
-        print('importing authors (this will take a while)')
         with zfile.open('Authors.txt') as zf:
-            authorsHandler(graph, nss, zf)
+            authorsHandler(graph, nss, zf, authors)
             
         print('importing conferences')
         with zfile.open('Conferences.txt') as zf:
@@ -133,47 +146,32 @@ def translate(ifile, ns):
         
         print('importing papers')
         with zfile.open('Papers.txt') as zf:
-            paperHandler(graph, nss, zf)
-        
-        print('importing papers-authors-affiliations')
-        with zfile.open('PaperAuthorAffiliations.txt') as zf:
-            paperAuthorAffiliationsHandler(graph, nss, zf)
+            paperHandler(graph, nss, zf, papers)
         
         print('importing papers keywords')
         with zfile.open('PaperKeywords.txt') as zf:
-            paperKeywordsHandler(graph, nss, zf)
+            paperKeywordsHandler(graph, nss, zf, papers)
         
         print('importing papers references')
         with zfile.open('PaperReferences.txt') as zf:
-            paperReferenceHandler(graph, nss, zf)
+            paperReferenceHandler(graph, nss, zf, papers)
         
         print('importing papers URIs')
         with zfile.open('PaperUrls.txt') as zf:
-            paperUrlsHandler(graph, nss, zf)
+            paperUrlsHandler(graph, nss, zf, papers)
         
 
     return graph
 
 
-def kddAffiliationsHandler(graph, nss, f):
+def kddAffiliationsHandler(f):
+    affiliations = set()
+    
     for line in f:
         terms = line.decode('utf-8').strip().split('\t')
-
-        ident = rawString(terms[0])
-        name = rawString(terms[-1])
-
-        # affiliation node plus label
-        root = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + ident)
-        label = rdflib.Literal('Affiliation \\"{}\\"'.format(name), lang='en')
-        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
-
-        # type
-        tnode = rdflib.URIRef(nss['SWRC'] + 'Organization')
-        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
-
-        # id node of affiliation
-        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
-        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
+        affiliations.add(rawString(terms[0]))
+    
+    return affiliations
 
 def kddPapersHandler(graph, nss, f):
     for line in f:
@@ -228,33 +226,34 @@ def affiliationsHandler(graph, nss, f):
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
-def authorsHandler(graph, nss, f):
+def authorsHandler(graph, nss, f, authors):
     progress = 0
     for line in f:
+        if progress % 10000 == 0:
+            sys.stdout.write('\r ' + str(progress) + ' authors read.')
+            
         terms = line.decode('utf-8').strip().split('\t')
 
         ident = rawString(terms[0])
         name = rawString(terms[1])
 
-        # author node plus label
-        root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
-        label = rdflib.Literal('\\"{}\\"'.format(name.encode('utf-8')), lang='en')
-        graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
-
-        # type
-        tnode = rdflib.URIRef(nss['foaf'] + 'Person')
-        tnode_alt = rdflib.URIRef(nss['SWRC'] + 'Person')
-        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
-        graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode_alt))
-
-        # id node of Author
-        idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
-        graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
-        
         progress += 1
-        if progress % 10000 == 0:
-            sys.stdout.write('\r ' + str(progress) + ' authors read.')
-        
+
+        if ident in authors:
+            # author node plus label
+            root = rdflib.URIRef(nss['base'] + 'MAG_Author_' + ident)
+            label = rdflib.Literal('\\"{}\\"'.format(name.encode('utf-8')), lang='en')
+            graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
+    
+            # type
+            tnode = rdflib.URIRef(nss['foaf'] + 'Person')
+            tnode_alt = rdflib.URIRef(nss['SWRC'] + 'Person')
+            graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode))
+            graph.add((root, rdflib.URIRef(nss['rdf'] + 'type'), tnode_alt))
+    
+            # id node of Author
+            idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
+            graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
 def conferencesHandler(graph, nss, f):
     for line in f:
@@ -543,7 +542,10 @@ def paperHandler(graph, nss, f):
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['dcterms'] +'identifier'), idNode))
 
-def paperAuthorAffiliationsHandler(graph, nss, f):
+def paperAuthorAffiliationsHandler(graph, nss, f, affiliations):
+    authors = set()
+    papers = set()
+    
     for line in f:
         terms = line.decode('utf-8').strip().split('\t')
 
@@ -554,37 +556,42 @@ def paperAuthorAffiliationsHandler(graph, nss, f):
         #affiliationName_alt = rawString(terms[4])
         seqnum = rawString(terms[5])
 
-        paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
-        author = rdflib.URIRef(nss['base'] + 'MAG_Author_' + authorId)
-        affiliation = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + affiliationId)
+        if affiliationId in affiliations:
+            authors.add(authorId)
+            papers.add(paperId)
+            
+            paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
+            author = rdflib.URIRef(nss['base'] + 'MAG_Author_' + authorId)
+            affiliation = rdflib.URIRef(nss['base'] + 'MAG_Affiliation_' + affiliationId)
         
-        # paper - author
-        graph.add((paper, rdflib.URIRef(nss['dcterms'] + 'creator'), author))
-        graph.add((paper, rdflib.URIRef(nss['SWRC'] + 'creator'), author))
-        graph.add((paper, rdflib.URIRef(nss['foaf'] + 'maker'), author))
-        graph.add((author, rdflib.URIRef(nss['foaf'] + 'made'), paper))
-        
-        # affiliation - author
-        graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'member'), author))
-        graph.add((author, rdflib.URIRef(nss['SWRC'] + 'affiliation'), affiliation))
+            # paper - author
+            graph.add((paper, rdflib.URIRef(nss['dcterms'] + 'creator'), author))
+            graph.add((paper, rdflib.URIRef(nss['SWRC'] + 'creator'), author))
+            graph.add((paper, rdflib.URIRef(nss['foaf'] + 'maker'), author))
+            graph.add((author, rdflib.URIRef(nss['foaf'] + 'made'), paper))
+            
+            # affiliation - author
+            graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'member'), author))
+            graph.add((author, rdflib.URIRef(nss['SWRC'] + 'affiliation'), affiliation))
+    
+            # author sequence (not sure if this works out)
+            if int(seqnum) == 1: # first author
+                graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_firstAuthor'), author))
+            elif int(seqnum) == 2: 
+                graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_secondAuthor'), author))
+            elif int(seqnum) == 3: 
+                graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_thirdAuthor'), author))
+            # rest doesnt matter much (assumption)
+    
+            
+            # paper - affiliation (of author)
+            #graph.add((paper, rdflib.URIRef(nss['dcterms'] + 'creator'), affiliation))
+            #graph.add((paper, rdflib.URIRef(nss['SWRC'] + 'creator'), affiliation))
+            #graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'maker'), paper))
+            #graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'made'), paper))
+    return (papers, authors)
 
-        # author sequence (not sure if this works out)
-        if int(seqnum) == 1: # first author
-            graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_firstAuthor'), author))
-        elif int(seqnum) == 2: 
-            graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_secondAuthor'), author))
-        elif int(seqnum) == 3: 
-            graph.add((paper, rdflib.URIRef(nss['base'] + 'MAG_thirdAuthor'), author))
-        # rest doesnt matter much (assumption)
-
-        
-        # paper - affiliation (of author)
-        #graph.add((paper, rdflib.URIRef(nss['dcterms'] + 'creator'), affiliation))
-        #graph.add((paper, rdflib.URIRef(nss['SWRC'] + 'creator'), affiliation))
-        #graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'maker'), paper))
-        #graph.add((affiliation, rdflib.URIRef(nss['foaf'] + 'made'), paper))
-
-def paperKeywordsHandler(graph, nss, f):
+def paperKeywordsHandler(graph, nss, f, papers):
     for line in f:
         terms = line.decode('utf-8').strip().split('\t')
 
@@ -592,55 +599,58 @@ def paperKeywordsHandler(graph, nss, f):
         keyword = rawString(terms[1])
         fieldOfStudyId = rawString(terms[2])
 
-        # nodes
-        paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
-        fieldOfStudy = rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + fieldOfStudyId)
-        keywordNode = rdflib.Literal(keyword, lang='en')
-
-        # paper - topic
-        graph.add((paper, \
-                   rdflib.URIRef(nss['foaf'] + 'topic'), \
-                   keywordNode))
-
-        # fieldOfStudy - topic
-        graph.add((fieldOfStudy, \
-                   rdflib.URIRef(nss['foaf'] + 'topic'), \
-                   keywordNode))
-
-def paperReferenceHandler(graph, nss, f):
+        if paperId in papers:
+            # nodes
+            paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
+            fieldOfStudy = rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + fieldOfStudyId)
+            keywordNode = rdflib.Literal(keyword, lang='en')
+    
+            # paper - topic
+            graph.add((paper, \
+                       rdflib.URIRef(nss['foaf'] + 'topic'), \
+                       keywordNode))
+    
+            # fieldOfStudy - topic
+            graph.add((fieldOfStudy, \
+                       rdflib.URIRef(nss['foaf'] + 'topic'), \
+                       keywordNode))
+        
+def paperReferenceHandler(graph, nss, f, papers):
     for line in f:
         terms = line.decode('utf-8').strip().split('\t')
 
         paperId = rawString(terms[0])
         refId = rawString(terms[1])
 
-        # nodes
-        paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
-        ref = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + refId)
+        if paperId in papers:
+            # nodes
+            paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
+            ref = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + refId)
+    
+            # paper - reference
+            graph.add((paper, \
+                       rdflib.URIRef(nss['bibo'] + 'cites'), \
+                       ref))
+            graph.add((ref, \
+                       rdflib.URIRef(nss['bibo'] + 'isReferencedBy'), \
+                       paper))
 
-        # paper - reference
-        graph.add((paper, \
-                   rdflib.URIRef(nss['bibo'] + 'cites'), \
-                   ref))
-        graph.add((ref, \
-                   rdflib.URIRef(nss['bibo'] + 'isReferencedBy'), \
-                   paper))
-
-def paperUrlsHandler(graph, nss, f):
+def paperUrlsHandler(graph, nss, f, papers):
     for line in f:
         terms = line.decode('utf-8').strip().split('\t')
 
         paperId = rawString(terms[0])
         url = rawString(terms[1])
-
-        # nodes
-        paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
-        url = rdflib.Literal(url, datatype=rdflib.URIRef(nss['xsd'] + 'anyURI'))
-
-        # paper - url
-        graph.add((paper, \
-                   rdflib.URIRef(nss['rdfs'] + 'seeAlso'), \
-                   url))
+        
+        if paperId in papers:
+            # nodes
+            paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
+            url = rdflib.Literal(url, datatype=rdflib.URIRef(nss['xsd'] + 'anyURI'))
+    
+            # paper - url
+            graph.add((paper, \
+                       rdflib.URIRef(nss['rdfs'] + 'seeAlso'), \
+                       url))
 
 def rawString(string):
     return re.sub('\s+', ' ', re.sub(r'\"', r'\\"', re.sub(r'\\', r'\\\\', string)))
