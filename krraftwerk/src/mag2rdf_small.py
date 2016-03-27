@@ -80,8 +80,8 @@ def extOf(sformat=None):
 
 
 def translate(ifile, ns):
-    if not os.path.isfile(ifile):
-        raise OSError('File not found: ' + ifile)
+    if not os.path.isdir(ifile):
+        raise OSError('Dir not found: ' + ifile)
 
     # create graph instance
     graph = rdflib.Graph(identifier='MAG-LD')
