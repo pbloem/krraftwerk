@@ -30,7 +30,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-h':
             print(str('A tool to translate the Microsoft Academic Graph, to its Semantic Web equivalent.\nUsage:\n\t' +
-                      'mag2rdf.py -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]'))
+                      'mag2rdf.py -i <inputdir> [-d <default namespace> -o <outputfile> -f <serialization format>]'))
             sys.exit(0)
         elif opt in ("-i", "--ifile"):
             ifile = arg
@@ -101,65 +101,64 @@ def translate(ifile, ns):
 
     nss = dict(nsmgr.namespaces())
 
-    with zipfile.ZipFile(ifile, 'r') as zfile:
+
+
+    affiliations = None
+    print('importing KDD affiliations')
+    with open(ifile + '/2016KDDCupSelectedAffiliations.txt') as zf:
+       affiliations = kddAffiliationsHandler(zf)
+       
+    authors = None;
+    papers = None;
+    print('importing papers-authors-affiliations')
+    with ifile + '/PaperAuthorAffiliations.txt' as zf:
+        (papers, authors) = paperAuthorAffiliationsHandler(graph, nss, zf, affiliations)
+    
+    #with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
+    #    kddPapersHandler(graph, nss, zf)
+    
+    print('importing affiliations')
+    with open(ifile + '/Affiliations.txt') as zf:
+        affiliationsHandler(graph, nss, zf)
+    
+    with open(ifile + '/Authors.txt') as zf:
+        authorsHandler(graph, nss, zf, authors)
         
-        affiliations = None
-        print('importing KDD affiliations')
-        with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:
-           affiliations = kddAffiliationsHandler(zf)
-           
-        authors = None;
-        papers = None;
-        print('importing papers-authors-affiliations')
-        with zfile.open('PaperAuthorAffiliations.txt') as zf:
-            (papers, authors) = paperAuthorAffiliationsHandler(graph, nss, zf, affiliations)
+    print('importing conferences')
+    with open(ifile + '/Conferences.txt') as zf:
+        conferencesHandler(graph, nss, zf)
         
-        #with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
-        #    kddPapersHandler(graph, nss, zf)
-        
-        print('importing affiliations')
-        with zfile.open('Affiliations.txt') as zf:
-            affiliationsHandler(graph, nss, zf)
-        
-        with zfile.open('Authors.txt') as zf:
-            authorsHandler(graph, nss, zf, authors)
-            
-        print('importing conferences')
-        with zfile.open('Conferences.txt') as zf:
-            conferencesHandler(graph, nss, zf)
-            
-        print('importing conference instances')
-        with zfile.open('ConferenceInstances.txt') as zf:
-            conferenceInstancesHandler(graph, nss, zf)
-                                                       
-        print('importing fields of study')
-        with zfile.open('FieldsOfStudy.txt') as zf:
-            fieldsOfStudyHandler(graph, nss, zf)
-        
-        print('importing fields of study hierarchy')
-        with zfile.open('FieldOfStudyHierarchy.txt') as zf:
-            fieldOfStudyHierarchyHandler(graph, nss, zf)
-        
-        print('importing journals')
-        with zfile.open('Journals.txt') as zf:
-            journalHandler(graph, nss, zf)
-        
-        print('importing papers')
-        with zfile.open('Papers.txt') as zf:
-            paperHandler(graph, nss, zf, papers)
-        
-        print('importing papers keywords')
-        with zfile.open('PaperKeywords.txt') as zf:
-            paperKeywordsHandler(graph, nss, zf, papers)
-        
-        print('importing papers references')
-        with zfile.open('PaperReferences.txt') as zf:
-            paperReferenceHandler(graph, nss, zf, papers)
-        
-        print('importing papers URIs')
-        with zfile.open('PaperUrls.txt') as zf:
-            paperUrlsHandler(graph, nss, zf, papers)
-        
+    print('importing conference instances')
+    with open(ifile + '/ConferenceInstances.txt') as zf:
+        conferenceInstancesHandler(graph, nss, zf)
+                                                   
+    print('importing fields of study')
+    with open(ifile + '/FieldsOfStudy.txt') as zf:
+        fieldsOfStudyHandler(graph, nss, zf)
+    
+    print('importing fields of study hierarchy')
+    with open(ifile + '/FieldOfStudyHierarchy.txt') as zf:
+        fieldOfStudyHierarchyHandler(graph, nss, zf)
+    
+    print('importing journals')
+    with open(ifile + '/Journals.txt') as zf:
+        journalHandler(graph, nss, zf)
+    
+    print('importing papers')
+    with open(ifile + '/Papers.txt') as zf:
+        paperHandler(graph, nss, zf, papers)
+    
+    print('importing papers keywords')
+    with open(ifile + '/PaperKeywords.txt') as zf:
+        paperKeywordsHandler(graph, nss, zf, papers)
+    
+    print('importing papers references')
+    with open(ifile + '/PaperReferences.txt') as zf:
+        paperReferenceHandler(graph, nss, zf, papers)
+    
+    print('importing papers URIs')
+    with open(ifile + '/PaperUrls.txt') as zf:
+        paperUrlsHandler(graph, nss, zf, papers)
 
     return graph
 
@@ -545,7 +544,6 @@ def paperHandler(graph, nss, f):
 def paperAuthorAffiliationsHandler(graph, nss, f, affiliations):
     authors = set()
     papers = set()
-    
     
     progress = 0
     for line in f:
