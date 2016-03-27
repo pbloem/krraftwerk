@@ -111,7 +111,7 @@ def translate(ifile, ns):
     authors = None;
     papers = None;
     print('importing papers-authors-affiliations')
-    with ifile + '/PaperAuthorAffiliations.txt' as zf:
+    with open(ifile + '/PaperAuthorAffiliations.txt') as zf:
         (papers, authors) = paperAuthorAffiliationsHandler(graph, nss, zf, affiliations)
     
     #with zfile.open('2016KDDCupSelectedPapers.txt') as zf:
