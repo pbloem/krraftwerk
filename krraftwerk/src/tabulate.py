@@ -69,3 +69,6 @@ def main(argv):
     
 def rawString(string):
     return re.sub('\s+', ' ', re.sub(r'\"', r'\\"', re.sub(r'\\', r'\\\\', string)))
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
