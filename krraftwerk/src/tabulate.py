@@ -19,7 +19,7 @@ def main(argv):
     conference = ''
 
     try:
-        opts, args = getopt.getopt(argv, "d:f:hi:o:", ["if=", "of=", "format=", "default_namespace="])
+        opts, args = getopt.getopt(argv, "d:f:hi:o:c:", ["if=", "of=", "format=", "default_namespace="])
     except getopt.GetoptError, exc:
         print(exc.msg)
         print('tabulate.py -c <conference-name> -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]')
