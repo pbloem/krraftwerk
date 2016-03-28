@@ -9,9 +9,14 @@ from writer import writer
 from dateutil import parser
 from geoSolv import GeoIndex
 
+#
+#
+#
+
 def main(argv):
     ifile = ''
     ofile = ''
+    conference = ''
 
     try:
         opts, args = getopt.getopt(argv, "d:f:hi:o:", ["if=", "of=", "format=", "default_namespace="])
@@ -32,17 +37,21 @@ def main(argv):
             conference = arg
             
     if ifile == '':
-        print('Missing required input (flags).\nUse \'tabulate.py -h\' for help.')
+        print('Missing required input -i.\nUse \'tabulate.py -h\' for help.')
+        sys.exit(1)
+        
+    if ifile == '':
+        print('Missing required input -c.\nUse \'tabulate.py -h\' for help.')
         sys.exit(1)
 
     if ofile == '' and ifile != '':
         ofile = os.getcwd() + '/' + re.sub(r'^(?:.*/)?(.*)\..*$', r'\1', ifile) + '-{}'.format(str(datetime.now()))
     else:
-        ofile = os.getcwd() + '/' + 'output-{}'.format(str(datetime.now()))
+        ofile = os.getcwd() + '/' + 'output.{}.{}'.format(conference,str(datetime.now()))
 
     # Read relevant papers
     paperIDs = set()
-    yearToPapers = {}
+    yeartopapers = {}
     
     print('reading relevant papers')
     with zipfile.ZipFile(ifile, 'r') as zfile:
@@ -57,12 +66,14 @@ def main(argv):
                 confShortName = rawString(terms[4])
             
                 if confShortName == conference:
-                    if not yearToPapers[year]:
-                        yearToPapers[year] = set()
-                    yearToPapers[year].add(ident)
+                    if not yeartopapers[year]:
+                        yeartopapers[year] = set()
+                    yeartopapers[year].add(ident)
                 
-    for year, paper in yearToPapers:
-        print(year + '\t' + paper )                
+    for year in yeartopapers.keys():
+        print(year + ' has ' + len(yeartopapers[year]) + ' papers.')          
+        
+              
     # Read paper auth affiliations and tabulate scores
     
     
