@@ -72,7 +72,7 @@ def main(argv):
                     papertoyear[ident] = year
                 papertoyear[ident] = year
 
-    years = yeartopapers.keys().sorted()
+    years = sorted(yeartopapers.keys())
 
     affiliations = []
     affiliationsSet = set()
