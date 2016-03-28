@@ -72,7 +72,7 @@ def main(argv):
                     yeartopapers[year].add(ident)
                 
     for year in yeartopapers.keys():
-        print(year + ' has ' + len(yeartopapers[year]) + ' papers.')          
+        print(year + ' has ' + str(len(yeartopapers[year])) + ' papers.')          
         
               
     # Read paper auth affiliations and tabulate scores
