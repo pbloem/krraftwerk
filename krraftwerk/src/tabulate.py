@@ -8,10 +8,7 @@ import rdflib
 from writer import writer
 from dateutil import parser
 from geoSolv import GeoIndex
-
-#
-#
-#
+import numpy as n
 
 def main(argv):
     ifile = ''
@@ -70,13 +67,40 @@ def main(argv):
                     if not year in yeartopapers:
                         yeartopapers[year] = set()
                     yeartopapers[year].add(ident)
+
+
+    affiliations = []
+    affiliationsSet = set()
+
+    print('reading affiliations')
+    with zipfile.ZipFile(ifile, 'r') as zfile:
+        with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:            
+            for line in zf:
+                terms = line.decode('utf-8').strip().split('\t')
+
+                ident = rawString(terms[0])
+                name = rawString(terms[-1])
                 
-    for year in yeartopapers.keys():
-        print(year + ' has ' + str(len(yeartopapers[year])) + ' papers.')          
-        
-              
+                affiliations.append(ident)
+                affiliationsSet.add(ident)
+                
+    # set up the score matrix
+    scores = n.zeros(len(affiliations), len(yeartopapers.keys()))
+                
     # Read paper auth affiliations and tabulate scores
-    
+    progress = 0
+    print('tabulating scores (this may take a while) ')
+    with zipfile.ZipFile(ifile, 'r') as zfile:
+        with zfile.open('PaperAuthorAffiliations.txt') as zf:
+            for line in zf:
+                if progress % 10000 == 0:
+                    sys.stdout.write('\r ' + str(progress) + ' paper/author affiliations read.')
+        
+                progress = progress + 1
+                 
+                paperId = rawString(terms[0])
+                authorId = rawString(terms[1])
+                affiliationId = rawString(terms[2])
     
     
 def rawString(string):
