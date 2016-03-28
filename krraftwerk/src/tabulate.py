@@ -48,7 +48,7 @@ def main(argv):
         ofile = os.getcwd() + '/' + 'output.{}.{}'.format(conference,str(datetime.now()))
 
     # Read relevant papers
-    paperIDs = set()
+    paper_ids = set()
     yeartopapers = {}
     papertoyear = {}
     
@@ -60,7 +60,7 @@ def main(argv):
             ident = rawString(terms[0])
             title = rawString(terms[1])
             year = rawString(terms[2])
-            confID = rawString(terms[3])
+            conf_id = rawString(terms[3])
             confShortName = rawString(terms[4])
         
             if confShortName == conference:
@@ -71,11 +71,13 @@ def main(argv):
                 if not ident in papertoyear:
                     papertoyear[ident] = year
                 papertoyear[ident] = year
+                
+            paper_ids.add(ident)
 
     years = sorted(yeartopapers.keys())
 
     affiliations = []
-    affiliationsSet = set()
+    affiliations_set = set()
 
     print('reading affiliations')
     with open(ifile + '/2016KDDCupSelectedAffiliations.txt') as zf:            
@@ -86,7 +88,7 @@ def main(argv):
             name = rawString(terms[-1])
             
             affiliations.append(ident)
-            affiliationsSet.add(ident)
+            affiliations_set.add(ident)
                     
     # Read paper auth affiliations and tabulate scores
     progress = 0
@@ -101,21 +103,21 @@ def main(argv):
 
             progress = progress + 1
              
-            paperID = rawString(terms[0])
-            authorID = rawString(terms[1])
-            affiliationID = rawString(terms[2])
+            paper_id = rawString(terms[0])
+            author_id = rawString(terms[1])
+            affiliation_id = rawString(terms[2])
             
-            if not paperID in paa:
-                paa[paperID] = {}
-            if not authorID in paa[paperID]:
-                paa[paperID][authorID] = set()
-            paa[paperID][authorID].add(affiliationID)
+            if not paper_id in paa:
+                paa[paper_id] = {}
+            if not author_id in paa[paper_id]:
+                paa[paper_id][author_id] = set()
+            paa[paper_id][author_id].add(affiliation_id)
     
     # set up the score matrix
     scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
     
     print('computing scores')
-    for paper_id in paperIDs:
+    for paper_id in paper_ids:
         per_author = 1.0 / len(paa[paper_id].keys())
         
         paper_year = papertoyear[paper_id]
@@ -125,9 +127,10 @@ def main(argv):
             per_affiliation = per_author / float(len(paa[paper_id][author_id].keys))
             
             for affiliation_id in paa[paper_id][author_id].keys():
-                affiliation_index = affiliations.index(affiliation_id)
                 
-                scores[affiliation_index, year_index] += per_affiliation
+                if affiliation_id in affiliations_set:
+                    affiliation_index = affiliations.index(affiliation_id)
+                    scores[affiliation_index, year_index] += per_affiliation
     
     print(scores)
     
