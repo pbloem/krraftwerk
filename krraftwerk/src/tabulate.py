@@ -96,6 +96,8 @@ def main(argv):
                 if progress % 10000 == 0:
                     sys.stdout.write('\r ' + str(progress) + ' paper/author affiliations read.')
         
+                terms = line.decode('utf-8').strip().split('\t')
+
                 progress = progress + 1
                  
                 paperId = rawString(terms[0])
