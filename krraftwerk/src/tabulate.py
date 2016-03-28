@@ -19,7 +19,7 @@ def main(argv):
         opts, args = getopt.getopt(argv, "d:f:hi:o:c:", ["if=", "of=", "format=", "default_namespace="])
     except getopt.GetoptError, exc:
         print(exc.msg)
-        print('tabulate.py -c <conference-name> -i <inputfile> [-d <default namespace> -o <outputfile> -f <serialization format>]')
+        print('tabulate.py -c <conference-name> -i <input dir> [-d <default namespace> -o <outputfile> -f <serialization format>]')
         sys.exit(2)
 
     for opt, arg in opts:
@@ -50,60 +50,88 @@ def main(argv):
     # Read relevant papers
     paperIDs = set()
     yeartopapers = {}
+    papertoyear = {}
     
     print('reading relevant papers')
-    with zipfile.ZipFile(ifile, 'r') as zfile:
-        with zfile.open('2016KDDCupSelectedPapers.txt') as zf:            
-            for line in zf:
-                terms = line.decode('utf-8').strip().split('\t')
+    with open(ifile + '/2016KDDCupSelectedPapers.txt') as zf:            
+        for line in zf:
+            terms = line.decode('utf-8').strip().split('\t')
 
-                ident = rawString(terms[0])
-                title = rawString(terms[1])
-                year = rawString(terms[2])
-                confID = rawString(terms[3])
-                confShortName = rawString(terms[4])
-            
-                if confShortName == conference:
-                    if not year in yeartopapers:
-                        yeartopapers[year] = set()
-                    yeartopapers[year].add(ident)
+            ident = rawString(terms[0])
+            title = rawString(terms[1])
+            year = rawString(terms[2])
+            confID = rawString(terms[3])
+            confShortName = rawString(terms[4])
+        
+            if confShortName == conference:
+                if not year in yeartopapers:
+                    yeartopapers[year] = set()
+                yeartopapers[year].add(ident)
+                
+                if not ident in papertoyear:
+                    papertoyear[ident] = year
+                papertoyear[ident] = year
 
+    years = yeartopapers.keys().sorted()
 
     affiliations = []
     affiliationsSet = set()
 
     print('reading affiliations')
-    with zipfile.ZipFile(ifile, 'r') as zfile:
-        with zfile.open('2016KDDCupSelectedAffiliations.txt') as zf:            
-            for line in zf:
-                terms = line.decode('utf-8').strip().split('\t')
+    with open(ifile + '/2016KDDCupSelectedAffiliations.txt') as zf:            
+        for line in zf:
+            terms = line.decode('utf-8').strip().split('\t')
 
-                ident = rawString(terms[0])
-                name = rawString(terms[-1])
+            ident = rawString(terms[0])
+            name = rawString(terms[-1])
+            
+            affiliations.append(ident)
+            affiliationsSet.add(ident)
                 
-                affiliations.append(ident)
-                affiliationsSet.add(ident)
-                
-    # set up the score matrix
-    scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
+
                 
     # Read paper auth affiliations and tabulate scores
     progress = 0
-    print('tabulating scores (this may take a while) ')
-    with zipfile.ZipFile(ifile, 'r') as zfile:
-        with zfile.open('PaperAuthorAffiliations.txt') as zf:
-            for line in zf:
-                if progress % 10000 == 0:
-                    sys.stdout.write('\r ' + str(progress) + ' paper/author affiliations read.')
-        
-                terms = line.decode('utf-8').strip().split('\t')
-
-                progress = progress + 1
-                 
-                paperId = rawString(terms[0])
-                authorId = rawString(terms[1])
-                affiliationId = rawString(terms[2])
+    paa = {}
+    print('checking affiliations')
+    with open(ifile + '/SelectedPaperAuthorAffiliations.txt') as zf:
+        for line in zf:
+            if progress % 10000 == 0:
+                sys.stdout.write('\r ' + str(progress) + ' paper/author affiliations read.')
     
+            terms = line.decode('utf-8').strip().split('\t')
+
+            progress = progress + 1
+             
+            paperID = rawString(terms[0])
+            authorID = rawString(terms[1])
+            affiliationID = rawString(terms[2])
+            
+            if not paperID in paa:
+                paa[paperID] = {}
+            if not authorID in paa[paperID]:
+                paa[paperID][authorID] = set()
+            paa[paperID][authorID][affiliationID]
+    
+    # set up the score matrix
+    scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
+    
+    print('computing scores')
+    for paper_id in paa.keys():
+        per_author = 1.0 / len(paa[paper_id].keys())
+        
+        paper_year = papertoyear[paper_id]
+        year_index = years.index(paper_year) 
+        
+        for author_id in paa[paper_id].keys():
+            per_affiliation = per_author / float(len(paa[paper_id][author_id].keys))
+            
+            for affiliation_id in paa[paper_id][author_id].keys():
+                affiliation_index = affiliations.index(affiliation_id)
+                
+                scores[affiliation_index, year_index] += per_affiliation
+    
+    print(scores)
     
 def rawString(string):
     return re.sub('\s+', ' ', re.sub(r'\"', r'\\"', re.sub(r'\\', r'\\\\', string)))
