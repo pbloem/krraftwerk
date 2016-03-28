@@ -87,9 +87,7 @@ def main(argv):
             
             affiliations.append(ident)
             affiliationsSet.add(ident)
-                
-
-                
+                    
     # Read paper auth affiliations and tabulate scores
     progress = 0
     paa = {}
@@ -117,7 +115,7 @@ def main(argv):
     scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
     
     print('computing scores')
-    for paper_id in paa.keys():
+    for paper_id in paperIDs:
         per_author = 1.0 / len(paa[paper_id].keys())
         
         paper_year = papertoyear[paper_id]
