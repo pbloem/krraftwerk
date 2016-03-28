@@ -67,7 +67,7 @@ def main(argv):
                 confShortName = rawString(terms[4])
             
                 if confShortName == conference:
-                    if year in yeartopapers:
+                    if not year in yeartopapers:
                         yeartopapers[year] = set()
                     yeartopapers[year].add(ident)
                 
