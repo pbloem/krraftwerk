@@ -115,7 +115,7 @@ def main(argv):
             paa[paper_id][author_id].add(affiliation_id)
     
     
-    print('computing scores')
+    print('\ncomputing scores')
     
     acytoscore = {} # (affiliation, conf_name, year) -> score
     
@@ -126,7 +126,7 @@ def main(argv):
         conf = papertoconf[paper_id]
                 
         for author_id in paa[paper_id].keys():
-            per_affiliation = per_author / float(len(paa[paper_id][author_id].keys))
+            per_affiliation = per_author / float(len(paa[paper_id][author_id]))
             # normalize
             per_affiliation /= float(len(yctopapers[year, conf])) 
             
