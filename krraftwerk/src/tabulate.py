@@ -111,7 +111,7 @@ def main(argv):
                 paa[paperID] = {}
             if not authorID in paa[paperID]:
                 paa[paperID][authorID] = set()
-            paa[paperID][authorID][affiliationID]
+            paa[paperID][authorID].add(affiliationID)
     
     # set up the score matrix
     scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
