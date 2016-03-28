@@ -85,7 +85,7 @@ def main(argv):
                 affiliationsSet.add(ident)
                 
     # set up the score matrix
-    scores = n.zeros(len(affiliations), len(yeartopapers.keys()))
+    scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
                 
     # Read paper auth affiliations and tabulate scores
     progress = 0
