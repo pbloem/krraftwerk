@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import math
+import random
 import getopt
 import zipfile
 from datetime import datetime
@@ -20,42 +21,27 @@ from sklearn import linear_model
 
 def main(argv):
     ifile = ''
-    ofile = ''
-    conference_in = ''
 
     try:
-        opts, args = getopt.getopt(argv, "d:f:hi:o:c:", ["if=", "of=", "format=", "default_namespace="])
+        opts, args = getopt.getopt(argv, "d:f:hi:", ["if=", "of=", "format=", "default_namespace="])
     except getopt.GetoptError, exc:
         print(exc.msg)
-        print('tabulate.py -i <input dir> [-d <default namespace> -o <outputfile> -f <serialization format>]')
+        print('make_prediction.py -i <input dir> [-d <default namespace> -o <outputfile> -f <serialization format>]')
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print(str('A tool to translate the Microsoft Academic Graph, to its Semantic Web equivalent.\nUsage:\n\t' +
-                      'tabulate.py -c <conference-name> -i <inputdir> [-d <default namespace> -o <outputfile> -f <serialization format>]'))
+            print(str('A first go at predictions for the KDD 2016 cup.\nUsage:\n\t' +
+                      'make_predictions.py -i <inputdir> [-d <default namespace> -o <outputfile> -f <serialization format>]'))
             sys.exit(0)
         elif opt in ("-i", "--ifile"):
             ifile = arg
         elif opt in ("-o", "--ofile"):
-            ofile = arg
-        elif opt in ("-c", "--conference"):
-            conference_in = str(arg).upper()
-            
-    print('using conference: {}'.format(conference_in))        
+            ofile = arg        
             
     if ifile == '':
         print('Missing required input -i.\nUse \'tabulate.py -h\' for help.')
         sys.exit(1)
-        
-    if ifile == '':
-        print('Missing required input -c.\nUse \'tabulate.py -h\' for help.')
-        sys.exit(1)
-
-    if ofile == '' and ifile != '':
-        ofile = os.getcwd() + '/' + re.sub(r'^(?:.*/)?(.*)\..*$', r'\1', ifile) + '-{}'.format(str(datetime.now()))
-    else:
-        ofile = os.getcwd() + '/' + 'output.{}.{}'.format(conference_in,str(datetime.now()))
 
     # Read relevant papers
     paper_ids = set()
@@ -64,6 +50,8 @@ def main(argv):
     papertoyear = {}
     papertoconf = {}
     conftoyears = {}
+    nametoid = {}
+
     
     print('reading relevant papers')
     with open(ifile + '/2016KDDCupSelectedPapers.txt') as zf:            
@@ -89,7 +77,11 @@ def main(argv):
                 
             paper_ids.add(ident)
             
+            nametoid[conf_name] = conf_id
+
+    
     print(str(len(paper_ids)) + ' papers')
+    print(nametoid['SIGIR'])
 
     affiliations = []
     affiliations_set = set()
@@ -103,7 +95,7 @@ def main(argv):
             name = rawString(terms[-1])
             
             affiliations.append(ident)
-            affiliations_set.add(ident)
+            affiliations_set.add(ident)            
                     
     # Read paper auth affiliations and tabulate scores
     progress = 0
@@ -156,82 +148,55 @@ def main(argv):
 #            output.write('"{}","{}",{}, {}\n'.format(affiliation, conf_name, int(year), score))
 #            
 #    output.close()
-
-    models = []
-    errors = []
-    inputs = []
     
-    test_year = -1
-    
+    output = open('./results.tsv', 'w')
     # Find length of matrix  
-    for conference in [None, conference_in]:
-        for num_previous in range(1, 10):
+    for (conference, use_all, num_previous) in [('SIGIR', True, 1), ('SIGMOD', False, 3), ('SIGCOMM', True, 1)]:
     
-            num_instances = 0;
-            for (affiliation, conf_name, year), score in acytoscore.items():
-                if int(year) != test_year:
-                    if conference == None or conf_name == conference:
-                        if exist_previous(num_previous, affiliation, conf_name, year, acytoscore):
-                            num_instances += 1
-                    
-            print('dataset will have {} instances'.format(num_instances))
-            if num_instances < 3:
-               break 
-                
-            data = n.zeros((num_instances, num_previous + 2))
+        num_instances = 0;
+        for (affiliation, conf_name, year), score in acytoscore.items():
+            if use_all or conf_name == conference:
+                if exist_previous(num_previous, affiliation, conf_name, year, acytoscore):
+                    num_instances += 1
+            
+        print('dataset will have {} instances'.format(num_instances)) 
+            
+        data = n.zeros((num_instances, num_previous + 2))
+    
+        instance = 0            
+        for (affiliation, conf_name, year), score in acytoscore.items():
+            if conference == None or conf_name == conference:
+                if exist_previous(num_previous, affiliation, conf_name, year, acytoscore):
+                    for i in range(num_previous):
+                        prevscore = acytoscore[affiliation, conf_name, str(int(year) - i - 1)]
+                        data[instance, i] = prevscore
+                    data[instance, num_previous + 1] = score
+                    instance += 1
+    
+        x = data[:, 0:num_previous]
+        y = data[:, num_previous+1]
         
-            instance = 0            
-            for (affiliation, conf_name, year), score in acytoscore.items():
-                if int(year) != test_year:
-                    if conference == None or conf_name == conference:
-                        if exist_previous(num_previous, affiliation, conf_name, year, acytoscore):
-                            data[instance, 0] = float(int(year))
-                            for i in range(1, num_previous + 1):
-                                prevscore = acytoscore[affiliation, conf_name, str(int(year) - i)]
-                                data[instance, i] = prevscore
-                            data[instance, num_previous + 1] = score
-                            instance += 1
-                        
-            n.set_printoptions(suppress=True)
-            n.set_printoptions(threshold=50)
+        reg = kernel_ridge.KernelRidge(kernel='rbf', alpha=0.001)
+        model = reg.fit(x, y)
         
-            x = data[:, 1:num_previous+1]
-            y = data[:, num_previous+1]
-            
-            # print(data)
-            # print(x)
-            # print(y)
-            
-            # model = svm.SVR(kernel='linear', gamma=0.1, C=10)
-            # model = linear_model.LinearRegression()
-            model = kernel_ridge.KernelRidge(kernel='rbf', alpha=0.001)
-            
-            # scores have sign flipped
-            scores = cross_validation.cross_val_score(model, x, y, scoring='mean_squared_error', cv=5)
-            rmse = math.sqrt(-sum(scores)/len(scores))
-            
-                # make a plot
-            if num_previous == 1 and conference == None:
-                fig = plt.figure()
-                ax = fig.add_subplot(111)
-                ax.scatter(data[:,1], data[:,2], c=data[:,0], linewidth=0, alpha=0.1)
-    
-                res = 1000            
-                xplot = n.linspace(0, 0.2, res).reshape(res, 1)
-                yplot = model.fit(x, y).predict(xplot)
-                ax.plot(xplot,yplot) 
+        # print out predictions
+        
+        conf_id = nametoid[conference]
+        target_year = 2015
+        for affiliation_id in affiliations:
+            x_line = n.zeros((1, num_previous))
+            for i in range(num_previous):
+                if (affiliation_id, conference, str(int(target_year) - i - 1)) in acytoscore:
+                    prevscore = acytoscore[affiliation_id, conference, str(int(target_year) - i - 1)]
+                else:
+                    prevscore = 0.0
+                x_line[0, i] = prevscore
+                print(x_line)
                 
-                plt.savefig('plot.png')
-            
-            print('{}: {}'.format(num_previous, rmse))
-            
-            models.append(model.fit(x, y))
-            errors.append(rmse)
-            inputs.append(x.shape[1])
+            score = model.predict(x_line)[0] + random.uniform(0.0, 0.0000001)
+            output.write('{}\t{}\t{}\n'.format(conf_id, affiliation_id, score))
     
-    for i in range(len(models)):        
-        print('{}\t{}\t{}'.format(models[i], errors[i], inputs[i]))
-    
+    output.close()
     print('finished.')
 
 def exist_previous(n, affiliation, conf_name, year, acytoscore):
