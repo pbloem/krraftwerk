@@ -5,9 +5,7 @@ import getopt
 import zipfile
 from datetime import datetime
 import rdflib
-from writer import writer
 from dateutil import parser
-from geoSolv import GeoIndex
 import numpy as n
 
 def main(argv):
