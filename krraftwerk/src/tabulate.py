@@ -19,7 +19,7 @@ def main(argv):
         opts, args = getopt.getopt(argv, "d:f:hi:o:c:", ["if=", "of=", "format=", "default_namespace="])
     except getopt.GetoptError, exc:
         print(exc.msg)
-        print('tabulate.py -c <conference-name> -i <input dir> [-d <default namespace> -o <outputfile> -f <serialization format>]')
+        print('tabulate.py -i <input dir> [-d <default namespace> -o <outputfile> -f <serialization format>]')
         sys.exit(2)
 
     for opt, arg in opts:
@@ -31,8 +31,6 @@ def main(argv):
             ifile = arg
         elif opt in ("-o", "--ofile"):
             ofile = arg
-        elif opt in ("-c", "--conference"):
-            conference = arg
             
     if ifile == '':
         print('Missing required input -i.\nUse \'tabulate.py -h\' for help.')
@@ -49,8 +47,11 @@ def main(argv):
 
     # Read relevant papers
     paper_ids = set()
-    yeartopapers = {}
+    years = set()
+    yctopapers = {}
     papertoyear = {}
+    papertoconf = {}
+    conftoyears = {}
     
     print('reading relevant papers')
     with open(ifile + '/2016KDDCupSelectedPapers.txt') as zf:            
@@ -61,20 +62,20 @@ def main(argv):
             title = rawString(terms[1])
             year = rawString(terms[2])
             conf_id = rawString(terms[3])
-            confShortName = rawString(terms[4])
-        
-            if confShortName == conference:
-                if not year in yeartopapers:
-                    yeartopapers[year] = set()
-                yeartopapers[year].add(ident)
+            conf_name = rawString(terms[4])
+            
+            if not (year, conf_name) in yctopapers:
+                yctopapers[(year, conf_name)] = set()
+            yctopapers[year, conf_name].add(ident)
+            
+            if not conf_name in conftoyears:
+                conftoyears[conf_name] = set()
+            conftoyears[conf_name].add(year)
                 
-                if not ident in papertoyear:
-                    papertoyear[ident] = year
-                papertoyear[ident] = year
+            papertoyear[ident] = year            
+            papertoconf[ident] = conf_name
                 
             paper_ids.add(ident)
-
-    years = sorted(yeartopapers.keys())
 
     affiliations = []
     affiliations_set = set()
@@ -113,26 +114,32 @@ def main(argv):
                 paa[paper_id][author_id] = set()
             paa[paper_id][author_id].add(affiliation_id)
     
-    # set up the score matrix
-    scores = n.zeros((len(affiliations), len(yeartopapers.keys())))
     
     print('computing scores')
+    
+    acytoscore = {} # (affiliation, conf_name, year) -> score
+    
     for paper_id in paper_ids:
         per_author = 1.0 / len(paa[paper_id].keys())
         
-        paper_year = papertoyear[paper_id]
-        year_index = years.index(paper_year) 
-        
+        year = papertoyear[paper_id]
+        conf = papertoconf[paper_id]
+                
         for author_id in paa[paper_id].keys():
             per_affiliation = per_author / float(len(paa[paper_id][author_id].keys))
+            # normalize
+            per_affiliation /= float(len(yctopapers[year, conf])) 
             
             for affiliation_id in paa[paper_id][author_id].keys():
                 
                 if affiliation_id in affiliations_set:
-                    affiliation_index = affiliations.index(affiliation_id)
-                    scores[affiliation_index, year_index] += per_affiliation
-    
-    print(scores)
+                    if not (affiliation_id, conf, year) in acytoscore:
+                        acytoscore[affiliation_id, conf, year] = 0.0
+                    acytoscore[affiliation_id, conf, year] += per_affiliation
+                    
+    with open('./table.csv', 'w') as output:
+        for (affiliation, conf_name, year), score in acytoscore:
+            output.write('"{}","{}",{}, {}'.format(affiliation, conf_name, int(year), score))
     
 def rawString(string):
     return re.sub('\s+', ' ', re.sub(r'\"', r'\\"', re.sub(r'\\', r'\\\\', string)))
