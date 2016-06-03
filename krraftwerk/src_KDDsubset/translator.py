@@ -239,6 +239,7 @@ def fAuthorsHandler(graph, nss, f, authors):
         ident = terms[0]
         name = terms[1].title()
 
+
         progress += 1
         if progress % 10000 == 0:
             sys.stdout.write('\r ' + str(progress) + ' lines read ')
@@ -258,7 +259,6 @@ def fAuthorsHandler(graph, nss, f, authors):
         # id node of Author
         idNode = rdflib.Literal(ident, datatype=rdflib.URIRef(nss['xsd'] + 'ID'))
         graph.add((root, rdflib.URIRef(nss['base'] +'MAG_hasID'), idNode))
-
 
 
 
@@ -297,21 +297,9 @@ def fConferencesHandler(graph, nss, f, confIDs):
         graph.add((root, rdflib.URIRef(nss['base'] +'MAG_hasID'), idNode))
 
 
-def fConferenceInstancesHandler(graph, nss, f, conferenceIDs, years, paperIDs):
+def fConferenceInstancesHandler(graph, nss, f, conferenceIDs, years, paperIDs, paperConfIDs):
     #geoIndex = GeoIndex()
 
-    """conferenceIDsPerYear = [(cid.value, y.value) \
-                                 for pid in paperIDs \
-                                 for paper, _, _ in graph.triples((None, rdflib.URIRef(nss['base'] + 'MAG_hasID'), rdflib.Literal(pid))) \
-                                 for _, _, conference in graph.triples((paper, rdflib.URIRef(nss['base'] + 'MAG_presentedAt'), None)) \
-                                 for _, _, cid in graph.triples((conference, rdflib.URIRef(nss['base'] + 'MAG_hasID'), None)) \
-                                 for _, _, y in graph.triples((paper, rdflib.URIRef(nss['base'] + 'MAG_yearOfPublication'), None))]
-    """
-    # linked by indices
-    #conferenceIDs, years = zip(*conferenceIDsPerYear)
-
-
-    #conferenceInstances = set()
 
     progress = 0
 
@@ -348,13 +336,9 @@ def fConferenceInstancesHandler(graph, nss, f, conferenceIDs, years, paperIDs):
         else:
             paperyear = -1
 
-        i = 0
-        while i < len(conferenceIDs):
-            if conferenceIDs[i] == organizationId and (int(paperyear) > 2010 or int(paperyear) < 0):
-                break
-            i += 1
-        if i >= len(conferenceIDs): # not a target conference
+        if organizationId not in conferenceIDs or not (int(paperyear) > 2010 or int(paperyear) < 0):
             continue
+
 
         #conferenceInstances.add(ident) # add kdd conf instances
 
@@ -363,9 +347,12 @@ def fConferenceInstancesHandler(graph, nss, f, conferenceIDs, years, paperIDs):
         label = rdflib.Literal(rawString(name), lang='en')
         graph.add((root, rdflib.URIRef(nss['rdfs'] + 'label'), label))
 
-        if int(years[i]) == int(paperyear):
-            graph.add((rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperIDs[i]), rdflib.URIRef(nss['base'] +'MAG_isPresentedAt'), root))
-            graph.add((root, rdflib.URIRef(nss['base'] +'MAG_hasPresented'), rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperIDs[i])))
+        i = 0
+        while i < len(paperConfIDs):
+            if paperConfIDs[i] == organizationId and int(paperyear) == years[i]:
+                graph.add((rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperIDs[i]), rdflib.URIRef(nss['base'] +'MAG_isPresentedAt'), root))
+                graph.add((root, rdflib.URIRef(nss['base'] +'MAG_hasPresented'), rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperIDs[i])))
+            i += 1
 
         # type
         tnode = rdflib.URIRef(nss['base'] + 'MAG_ConferenceInstance')
@@ -744,7 +731,6 @@ def fPapersHandler(graph, nss, f, kddPapers, confIDs):
     allPapers = []
     journalIDs = set()
     progress = 0
-
     for line in f:
         terms = line.strip().split('\t')
 
@@ -767,7 +753,7 @@ def fPapersHandler(graph, nss, f, kddPapers, confIDs):
         if ident in kddPapers or not (conferenceId in confIDs and int(year) > 2010):
             continue
 
-        allPapers.append((ident, year))
+        allPapers.append((ident, year, conferenceId))
 
 
         # add node plus label
@@ -811,7 +797,7 @@ def fPapersHandler(graph, nss, f, kddPapers, confIDs):
 
         # journal
         if journalId is not None:
-            journalIDs.add(journalId)
+            journalIDs.append(journalId)
             jnode = rdflib.URIRef(nss['base'] + 'MAG_Journal_' + journalId)
             graph.add((root, rdflib.URIRef(nss['base'] + 'MAG_isPublishedIn'), jnode))
             graph.add((jnode, rdflib.URIRef(nss['base'] + 'MAG_hasPublished'), root))
@@ -828,7 +814,6 @@ def fKDDPapersHandler(graph, nss, f, paperIDs, confIDs):
     progress = 0
 
     for line in f:
-
         terms = line.strip().split('\t')
 
         ident = terms[0]
@@ -872,7 +857,7 @@ def fKDDPapersHandler(graph, nss, f, paperIDs, confIDs):
                 graph.add((root, rdflib.URIRef(nss['base'] +'MAG_hasID'), idNode))
 
                 if journalId is not None:
-                    journalIDs.add(journalId)
+                    journalIDs.append(journalId)
             else:
                 allPaperConfIDs[ident] = conferenceId # exclude KDD subset as we already know about their confs
                 continue
@@ -901,18 +886,19 @@ def fKDDPapersHandler(graph, nss, f, paperIDs, confIDs):
 
         # journal
         if journalId is not None:
-            journalIDs.add(journalId)
+            journalIDs.append(journalId)
             jnode = rdflib.URIRef(nss['base'] + 'MAG_Journal_' + journalId)
             graph.add((root, rdflib.URIRef(nss['base'] + 'MAG_isPublishedIn'), jnode))
             graph.add((jnode, rdflib.URIRef(nss['base'] + 'MAG_hasPublished'), root))
 
+
     return (allPaperConfIDs, journalIDs)
 
 def fPaperAuthorAffiliationsHandler(graph, nss, f, paperIDs):
+
     authors = set()
     affiliations = set()
     progress = 0
-
     for line in f:
 
         terms = line.strip().split('\t')
@@ -931,8 +917,8 @@ def fPaperAuthorAffiliationsHandler(graph, nss, f, paperIDs):
         if paperId not in paperIDs:
             continue
 
-        authors.add(authorId)
-        affiliations.add(affiliationId)
+        authors.append(authorId)
+        affiliations.append(affiliationId)
 
 
         paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
@@ -969,7 +955,8 @@ def recursiveDownwardsExpandKeywordTree(g, nss, kw, kwset=None):
     if kwset is None:
         return recursiveDownwardsExpandKeywordTree(g, nss, kw, kwset={kw})
 
-    for _, _, ekw in g.triples((kw, rdflib.URIRef(nss['skos'] + 'narrower'), None)):
+    for _, _, ekw in g.triples((rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + kw), rdflib.URIRef(nss['skos'] + 'narrower'), None)):
+        ekw = re.sub('.*_', '', ekw.toPython())
         kwset = kwset.union(recursiveDownwardsExpandKeywordTree(g, nss, ekw, kwset={ekw}))
 
     return kwset
@@ -977,8 +964,8 @@ def recursiveDownwardsExpandKeywordTree(g, nss, kw, kwset=None):
 def fPaperKeywordsHandler(graph, nss, f, paperIDs, paperConfIndex):
     allKDDSubsetFOS = set()
     confFOSIndex = dict()
-
     progress = 0
+
     for line in f:
         terms = line.strip().split('\t')
 
@@ -1005,7 +992,7 @@ def fPaperKeywordsHandler(graph, nss, f, paperIDs, paperConfIndex):
         fieldOfStudy = rdflib.URIRef(nss['base'] + 'MAG_FieldOfStudy_' + fieldOfStudyId)
         keywordNode = rdflib.Literal(keyword, lang='en')
 
-        allKDDSubsetFOS.add(fieldOfStudy)
+        allKDDSubsetFOS.append(fieldOfStudyId)
         # paper - topic
         graph.add((paper, \
                    rdflib.URIRef(nss['base'] + 'MAG_hasKeyword'), \
@@ -1020,6 +1007,7 @@ def fPaperKeywordsHandler(graph, nss, f, paperIDs, paperConfIndex):
 
 
 def expandConferences(kddFOSs, confFOSIndex, nrOfTerms, maxDiff=0.4, topn=-1, d='hamming'):
+    topn = 100 # temporary fix
     confs = []
 
     hashMapLength = nrOfTerms * 2
@@ -1040,10 +1028,11 @@ def expandConferences(kddFOSs, confFOSIndex, nrOfTerms, maxDiff=0.4, topn=-1, d=
         if topn < 0 and diff >= maxDiff:
             continue
 
-        confs.append(conf)
+        confs.append((conf, diff))
 
-        if topn > 0:
-            confs = sorted(confs)[-topn:]
+    if topn > 0:
+        confs.sort(key = lambda e: e[1])
+        confs = confs[:topn]
 
     return confs
 
@@ -1060,9 +1049,7 @@ def sparseHashingVectorization(features, n):
 
 def fPaperReferencesHandler(graph, nss, f, paperIDs):
     paperRefs = dict()
-
     progress = 0
-
     for line in f:
 
         terms = line.strip().split('\t')
@@ -1073,6 +1060,7 @@ def fPaperReferencesHandler(graph, nss, f, paperIDs):
         progress += 1
         if progress % 10000 == 0:
             sys.stdout.write('\r ' + str(progress) + ' lines read ')
+
 
         if paperId not in paperIDs:
             continue
@@ -1096,11 +1084,19 @@ def fPaperReferencesHandler(graph, nss, f, paperIDs):
                    rdflib.URIRef(nss['base'] + 'MAG_isCitedBy'), \
                    paper))
 
+    return paperRefs
+
+def fPaperRefCount(graph, nss, paperRefs):
+    progress = 0
     for paperId, nrOfRefs in paperRefs.items():
         paper = rdflib.URIRef(nss['base'] + 'MAG_Paper_' + paperId)
         graph.add((paper, \
                   rdflib.URIRef(nss['base']+ 'MAG_isNumberOfTimesCited'), \
                   rdflib.Literal(nrOfRefs, datatype=rdflib.URIRef(nss['xsd'] + 'positiveInteger'))))
+        progress += 1
+        if progress % 10000 == 0:
+            sys.stdout.write('\r ' + str(progress) + ' lines read ')
+
 
 
 

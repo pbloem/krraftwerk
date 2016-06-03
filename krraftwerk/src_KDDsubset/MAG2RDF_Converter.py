@@ -9,6 +9,7 @@ from writer import writer
 import translator
 import schema
 
+
 def main(argv):
     idir = ''
     ofile = ''
@@ -138,6 +139,8 @@ def translate(idir, ns):
     with open(idir + '2016KDDCupSelectedPapers.txt') as f:
         print('processing 2016 papers...')
         kddPapers, kddConfs, kddYears = zip(*translator.f2016KDDCupSelectedPapersHandler(graph, nss, f))
+    print()
+    print('found {} papers, with conferences, and years'.format(len(kddPapers)))
     
 
     # add conference instances from from all target conferences from year > 2010
@@ -146,68 +149,113 @@ def translate(idir, ns):
         translator.fKDDConferenceInstancesHandler(graph, nss, f, kddConfs, kddYears, kddPapers)
 
     del kddYears
+    print()
 
     # add papers from target conference instances
     with open(idir + 'Papers.txt') as f:
         print('processing papers...')
         (paperConfIndex, kddJournals) = translator.fKDDPapersHandler(graph, nss, f, kddPapers, kddConfs)
     
+    print()
+    print('found {} KDD journals and {} Non-KDD paper/conference pairs'.format(len(kddJournals), len(paperConfIndex)))
+
+
     # gather all relevant fields of study for target conferences
     with open(idir + 'PaperKeywords.txt') as f:
         print('processing paper keywords...')
         (kddKeywords, allKeywords) = translator.fPaperKeywordsHandler(graph, nss, f,\
                                                                       kddPapers,\
                                                                       paperConfIndex)
-
     del paperConfIndex
+    print()
+    print('found {} KDD keywords and {} Non-KDD conference/keywords pairs'.format(len(kddKeywords), len(allKeywords)))
 
-    print('processing fields of study...')
+
+    print('processing keyword graph...')
     kwgraph, nrOfKws = fieldOfStudyParser(idir, nss)  # keyword hierarchy graph
-    print('expanding fields of study...')
+    print()
+    print('found {} keywords in total'.format(nrOfKws))
+    print('expanding KDD Keywords...')
     kddKeywords = translator.downwardsExpandKeywordTree(kwgraph, nss, kddKeywords)
+    print()
+    print('expanded to {} KDD keywords'.format(len(kddKeywords)))
+    print('expanding non-KDD Keywords...')
+    progress = 0
+    for k,v in allKeywords.items():
+        allKeywords[k] = translator.downwardsExpandKeywordTree(kwgraph, nss, v)
+        progress += 1
+        if progress % 100 == 0:
+            sys.stdout.write('\r ' + str(progress) + ' lines read ')
 
+
+    kddConfs = set(kddConfs)  # rmv duplicates
+    l = len(kddConfs)
     # all potentially interesting conferences
     print('expanding conferences...')
-    confs = translator.expandConferences(kddKeywords, allKeywords, nrOfKws).extend(kddConfs)
+    allConfs = translator.expandConferences(kddKeywords, allKeywords, nrOfKws)
+    allConfs.extend(kddConfs)
     del kddKeywords
     del kddConfs
+    print()
+    print('expanded from {} to {} conferences'.format(l, len(allConfs)))
     
     # add papers from related conferences
     with open(idir + 'Papers.txt') as f:
         print('expanding papers...')
-        (paperYears, journals) = translator.fPapersHandler(graph, nss, f, kddPapers, confs)
+        (paperYearConfs, journals) = translator.fPapersHandler(graph, nss, f, kddPapers, allConfs)
 
-        journals = journals.union(kddJournals)
-        papers, years = zip(*paperYears)
-        papers = list(papers)
-        papers.extend(kddPapers)
+    journals = set(journals) # rmv duplicates
+    journals = journals.union(kddJournals)
+    papers, years, confs = zip(*paperYearConfs)
 
-        del paperYears
-        del kddPapers
-        del kddJournals
+    print()
+    print('found {} additional journals and {} papers'.format(len(journals), len(papers)))
     
+    del paperYearConfs
+    del kddJournals
+
     # add conference instances from from all related conferences from year > 2010
+    l = len(graph)
     with open(idir + 'ConferenceInstances.txt') as f:
         print('expanding conference instances...')
-        translator.fConferenceInstancesHandler(graph, nss, f, confs, years, papers)
+        translator.fConferenceInstancesHandler(graph, nss, f, allConfs, years, papers, confs)
+    print()
+    print('expanded graph with {} conference instance triples'.format(len(graph)-l))
 
     ### rest is generic ###
+    
+    papers = list(papers)
+    papers.extend(kddPapers)
+    del kddPapers
+    print()
+    print('expanded to {} papers'.format(len(papers)))
 
     # add conference organizations  
+    l0 = len(graph)
     with open(idir + 'Conferences.txt') as f:
         print('processing conferences...')
-        translator.fConferencesHandler(graph, nss, f, confs)
+        translator.fConferencesHandler(graph, nss, f, allConfs)
+    print()
+    print('expanded graph with {} conference triples'.format(len(graph)-l0))
 
     # add journals from papers
+    l0 = len(graph)
     with open(idir + 'Journals.txt') as f:
         print('processing journals...')
         translator.fJournalsHandler(graph, nss, f, journals)
+    print()
+    print('expanded graph with {} journal triples'.format(len(graph)-l0))
 
     # add nr of citations by others
+    l0 = len(graph)
     with open(idir + 'PaperReferences.txt') as f:
         print('processing paper references...')
-        translator.fPaperReferencesHandler(graph, nss, f, papers)
+        paperRefs = translator.fPaperReferencesHandler(graph, nss, f, papers)
   
+    translator.fPaperRefCount(graph, nss, paperRefs)
+    print()
+    print('expanded graph with {} reference triples'.format(len(graph)-l0))
+    
     # not relevant feature
     #with open(idir + 'PaperUrls.txt') as f:
     #    translator.fPaperUrlsHandler(graph, nss, f, papers)
@@ -217,6 +265,10 @@ def translate(idir, ns):
     with open(idir + 'PaperAuthorAffiliations.txt') as f:
         print('processing paper/author/affiliations...')
         (authors, affiliations) = translator.fPaperAuthorAffiliationsHandler(graph, nss, f, papers) 
+    authors = set(authors)
+    affiliations = set(affiliations)
+    print()
+    print('found {} authors and {} affiliations'.format(len(authors), len(affiliations)))
     
     with open(idir + 'Affiliations.txt') as f:
         print('processing affiliations...')
@@ -226,7 +278,9 @@ def translate(idir, ns):
     with open(idir + 'Authors.txt') as f:
         print('processing authors...')
         translator.fAuthorsHandler(graph, nss, f, authors)
-
+    
+    print()
+    print('{} triples in total'.format(len(graph)))
     return graph
 
 
