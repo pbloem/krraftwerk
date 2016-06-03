@@ -1,0 +1,48 @@
+[spider/spider] /scratch/spider/mag2rdf_mt $ python3.5 MAG2RDF_Converter.py -i ../magdata/ -f 'turtle' -d 'http://mag.spider.d2s.labs.vu.nl/'
+initiating graph...
+
+processing KDD 2016 subset papers...
+found 3677 papers, with conferences, and years
+
+processing related conference instances...
+
+processing all papers...
+found 12 KDD journals and 126900927 Non-KDD paper/conference pairs (paper X -> conf Y)
+
+processing paper keywords
+found 1798 KDD keywords and 1278 Non-KDD conference/keywords pairs (conf X -> [keyword A, keyword B, ...]
+
+importing keywords hierarchy graph (SKOS)
+found 53834 keywords in total
+
+expanding KDD Keywords... (recursive skos:narrower)
+expanded from 1798 to 2220 keywords
+
+expanding conferences...
+expanded from 8 (KDD) to 108 (KDD+related) conferences
+
+processing papers... (2nd pass)
+found 12 additional journals and 4417 papers (belonging to the related conferences)
+
+expanding conference instances...
+expanded graph with 0 conference instance triples (<- something went wrong here, not critical)
+
+expanded from 3677 to 8094 papers total
+
+processing conferences...
+expanded graph with 24 conference triples (<- expected more, will check)
+
+processing journals...
+expanded graph with 36 journal triples (<- same as above)
+
+processing PaperReferences...
+expanded graph with 15465 reference triples
+
+processing PaperAuthorAffiliations...
+found 17528 authors and 1255 affiliations
+
+processing affiliations...
+processing Authors...
+
+256662 triples in total
+
